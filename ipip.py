@@ -187,10 +187,10 @@ def main_menu():
             )
             print(".   \033[96mISATAP Server & Client Added in Multi (4)\033[0m")
             print(
-                ".   \033[97mWireguard local tunnel Added in Multi (4)\033[92m[NEW]\033[0m"
+                ".   \033[97mWireguard local tunnel Added in Multi (4)\033[0m"
             )
             print(
-                ".   \033[93mAdded Reconfig robot for multi methods\033[97m [ IP6IP6 & GRE6 added]\033[0m"
+                ".   \033[93mAdded L2TP Tunnel\033[97m[NEW] \033[0m"
             )
             print(
                 ".   \033[92mEOIP Added in Multi (4)\033[0m"
@@ -215,7 +215,8 @@ def main_menu():
             print("6. \033[93mReset timer for Local Tunnels\033[0m")
             print("7. \033[92mEdit Local Tunnels\033[0m")
             print("8. \033[93mLocalTun \033[97m[Self Usage & Online Game]\033[0m")
-            print("9. \033[92mReconfig Robot \033[97m[New]\033[0m")
+            print("9. \033[92mReconfig Robot\033[0m")
+            print("10. \033[93mL2TP Tunnel \033[97m[New]\033[0m")
             print("q. Exit")
             print(
                 "\033[93m╰─────────────────────────────────────────────────────────────────────╯\033[0m"
@@ -251,6 +252,9 @@ def main_menu():
 
             elif choice == "9":
                 robot_menu()
+
+            elif choice == "10":
+                l2tp_v3_mnu()
 
             elif choice == "q":
                 print("Exiting...")
@@ -127818,6 +127822,4202 @@ done
     ping_gengre_service()
 
     print("\033[92mIRAN Server Configuration Completed!\033[0m")
+
+#l2tp
+def l2tp_v3_mnu():
+    try:
+        while True:
+            os.system("clear")
+            print("\033[92m ^ ^\033[0m")
+            print("\033[92m(\033[91mO,O\033[92m)\033[0m")
+            print("\033[92m(   ) \033[92mL2TP V3 \033[93mMenu\033[0m")
+            print(
+                '\033[92m "-"\033[93m═══════════════════════════════════════════════════\033[0m'
+            )
+            print("\033[93m╭───────────────────────────────────────╮\033[0m")
+            print("\033[93mChoose what to do:\033[0m")
+            print("0. \033[91mStatus\033[0m")
+            print("1. \033[92mL2TPV3 \033[0m")
+            print("2. \033[93mEdit local\033[0m")
+            print("3. \033[92mEdit IPSEC timer\033[0m")
+            print("4. \033[91mUninstall\033[0m")
+            print("q.\033[97mExit\033[0m")
+            print("\033[93m╰───────────────────────────────────────╯\033[0m")
+
+            server_type = input("\033[38;5;205mEnter your choice Please: \033[0m").strip()
+
+            if server_type == "0":
+                l2tp_status()
+            elif server_type == "1":
+                l2tpv3_menu()
+            elif server_type == "2":
+                editlocal_l2tp_menu()
+            elif server_type == "3":
+                ipsec_timer()
+            elif server_type == "4":
+                l2tp_uninstall_mnu()
+            elif server_type.lower() == "q":
+                print("\033[93mExiting RN!\033[0m")
+                return
+            else:
+                print("\033[91mWrong choice. select a valid option.\033[0m")
+            
+            input("\n\033[97mPress Enter to continue...\033[0m")
+
+    except KeyboardInterrupt:
+        print("\033[91m\nProgram interrupted. Exiting...\033[0m")
+        sys.exit()
+
+#status 
+def l2tp_status():
+
+    if os.geteuid() != 0:
+        print("ERROR: Please run this script as root (using sudo).")
+        return
+
+    while True:
+        os.system("clear")
+        print("\033[92m ^ ^\033[0m")
+        print("\033[92m(\033[91mO,O\033[92m)\033[0m")
+        print("\033[92m(   ) \033[92mL2TP Status \033[93mMenu\033[0m")
+        print(
+        '\033[92m "-"\033[93m═══════════════════════════════════════════════════\033[0m'
+        )
+        print("\033[93m╭───────────────────────────────────────╮\033[0m")
+        print("1)\033[93m Server & Client [1]\033[0m")
+        print("2)\033[93m Server & Client [2]\033[0m")
+        print("3)\033[92m Server & Client [3]\033[0m")
+        print("4)\033[93m Server & Client [4]\033[0m")
+        print("5)\033[93m Server & Client [5]\033[0m")
+        print("q) back to previous menu")
+        print("\033[93m╰───────────────────────────────────────╯\033[0m")
+
+        choice = input("Choose an option [1-q]: ").strip()
+
+        if choice == '1':
+            status_l2tp1()
+            break
+        elif choice == '2':
+            status_l2tp2()
+            break
+        elif choice == '3':
+            status_l2tp3()
+            break
+        elif choice == '4':
+            status_l2tp4()
+            break
+        elif choice == '5':
+            status_l2tp5()
+            break
+        elif choice == 'q':
+            l2tp_v3_mnu()
+        else:
+            print("Wrong choice. Please select corrent input.")
+
+
+ANSI_ESCAPE = re.compile(
+    r'\x1B\[?[0-?]*[ -/]*[@-~]'
+)
+GREEN = "\033[92m"
+RED = "\033[91m"
+YELLOW = "\033[93m"
+RESET = "\033[0m"
+
+def strip_ansi_codes(text):
+
+    return ANSI_ESCAPE.sub('', text)
+
+def print_in_box(lines):
+
+    max_length = max(len(strip_ansi_codes(line)) for line in lines)
+    border = "+" + "-" * (max_length + 2) + "+"
+
+    print(border)
+    for line in lines:
+        visible_len = len(strip_ansi_codes(line))
+        padding = max_length - visible_len
+        print(f"| {line}{' ' * padding} |")
+    print(border)
+
+def check_interface(interface_name):
+    info = {
+        "interface_found": False,
+        "operstate_up": False,
+        "has_ip": False,
+        "l2tp_session_found": False
+    }
+
+    try:
+        cmd_output = subprocess.check_output(
+            ["ip", "link", "show", interface_name],
+            stderr=subprocess.STDOUT
+        ).decode("utf-8")
+        info["interface_found"] = True
+    except subprocess.CalledProcessError:
+        return info
+
+    lines = cmd_output.splitlines()
+    if len(lines) > 0:
+        first_line = lines[0].strip()
+        
+        if "state UP" in first_line:
+            info["operstate_up"] = True
+        else:
+            if "<" in first_line and ">" in first_line:
+                bracketed_flags = first_line.split("<", 1)[1].split(">", 1)[0]
+                if "UP" in bracketed_flags:
+                    info["operstate_up"] = True
+
+    try:
+        addr_output = subprocess.check_output(
+            ["ip", "addr", "show", "dev", interface_name],
+            stderr=subprocess.STDOUT
+        ).decode("utf-8")
+
+        for line in addr_output.splitlines():
+            if line.strip().startswith("inet "):
+                info["has_ip"] = True
+                break
+    except subprocess.CalledProcessError:
+        pass
+
+    try:
+        l2tp_sess_output = subprocess.check_output(
+            ["ip", "l2tp", "show", "session"],
+            stderr=subprocess.STDOUT
+        ).decode("utf-8")
+        if interface_name in l2tp_sess_output:
+            info["l2tp_session_found"] = True
+    except subprocess.CalledProcessError:
+        pass
+
+    return info
+
+def check_ipsec():
+    info = {
+        "ipsec_command_found": False,
+        "ipsec_running": False,
+        "active_sas": False,
+        "status_output": ""
+    }
+
+    ipsec_path = shutil.which("ipsec")
+    if not ipsec_path:
+        info["ipsec_command_found"] = False
+        return info
+    else:
+        info["ipsec_command_found"] = True
+
+    try:
+        status_output = subprocess.check_output(
+            ["ipsec", "status"],
+            stderr=subprocess.STDOUT
+        ).decode("utf-8", errors="ignore")
+
+        info["status_output"] = status_output
+        info["ipsec_running"] = True
+
+        if "INSTALLED" in status_output or "SAs:" in status_output:
+            info["active_sas"] = True
+        else:
+            for line in status_output.splitlines():
+                if "Security Associations" in line and "up," in line:
+                    try:
+                        start_idx = line.index("(") + 1
+                        end_idx = line.index(" up")
+                        number_str = line[start_idx:end_idx].strip()
+                        if int(number_str) > 0:
+                            info["active_sas"] = True
+                    except ValueError:
+                        pass
+
+    except subprocess.CalledProcessError:
+        info["ipsec_running"] = False
+
+    return info
+
+def status_l2tp1():
+    server_iface = "l2tpeth0"
+    client_iface = "l2tpeth0"
+
+    os.system("clear")
+    print("\033[92m ^ ^\033[0m")
+    print("\033[92m(\033[91mO,O\033[92m)\033[0m")
+    print("\033[92m(   ) \033[92mStatus\033[93m Server & Client [1] Menu\033[0m")
+    print('\033[92m "-"\033[93m════════════════════════════════\033[0m')
+    print("\033[93m╭───────────────────────────────────────╮\033[0m")
+    print("\033[93m=== Checking L2TP/IPsec Status ===\033[0m")
+
+    server_info = check_interface(server_iface)
+    client_info = check_interface(client_iface)
+    ipsec_info = check_ipsec()
+
+    summary_lines = []
+
+    summary_lines.append(f"\033[93mInterface \033[92m(Server)\033[93m: \033[97m{server_iface}\033[0m")
+    if not server_info["interface_found"]:
+        summary_lines.append(f"  → {RED}NOT found on system{RESET}")
+    else:
+        summary_lines.append(f"  → {GREEN}Found{RESET}")
+        
+        if server_info["operstate_up"]:
+            summary_lines.append(f"  - State: {GREEN}UP{RESET}")
+        else:
+            summary_lines.append(f"  - State: {RED}DOWN{RESET}")
+
+        if server_info["has_ip"]:
+            summary_lines.append(f"  - IP assigned: {GREEN}Yes{RESET}")
+        else:
+            summary_lines.append(f"  - IP assigned: {RED}No{RESET}")
+
+        if server_info["l2tp_session_found"]:
+            summary_lines.append(f"  - L2TP session: {GREEN}Found{RESET}")
+        else:
+            summary_lines.append(f"  - L2TP session: {RED}Not found{RESET}")
+
+    summary_lines.append("")  
+
+    summary_lines.append(f"\033[93mInterface\033[92m (Client)\033[93m:\033[97m {client_iface}\033[0m")
+    if not client_info["interface_found"]:
+        summary_lines.append(f"  → {RED}NOT found on system{RESET}")
+    else:
+        summary_lines.append(f"  → {GREEN}Found{RESET}")
+        if client_info["operstate_up"]:
+            summary_lines.append(f"  - State: {GREEN}UP{RESET}")
+        else:
+            summary_lines.append(f"  - State: {RED}DOWN{RESET}")
+
+        if client_info["has_ip"]:
+            summary_lines.append(f"  - IP assigned: {GREEN}Yes{RESET}")
+        else:
+            summary_lines.append(f"  - IP assigned: {RED}No{RESET}")
+
+        if client_info["l2tp_session_found"]:
+            summary_lines.append(f"  - L2TP session: {GREEN}Found{RESET}")
+        else:
+            summary_lines.append(f"  - L2TP session: {RED}Not found{RESET}")
+
+    summary_lines.append("")  
+
+    summary_lines.append("\033[93mIPsec\033[0m")
+    if not ipsec_info["ipsec_command_found"]:
+        summary_lines.append(f"  → {RED}'ipsec' command NOT found (not installed?){RESET}")
+    else:
+        if not ipsec_info["ipsec_running"]:
+            summary_lines.append(f"  → {RED}Service NOT running or 'ipsec status' failed{RESET}")
+        else:
+            summary_lines.append(f"  → {GREEN}Service is running{RESET}")
+            if ipsec_info["active_sas"]:
+                summary_lines.append(f"  - Active SAs: {GREEN}Yes{RESET}")
+            else:
+                summary_lines.append(f"  - Active SAs: {RED}No{RESET}")
+
+    print_in_box(summary_lines)
+
+    print(f"\n{GREEN}=== L2TP/IPsec Check Complete ==={RESET}")
+
+#2
+def status_l2tp2():
+    server_iface = "l2tpeth1"
+    client_iface = "l2tpeth0"
+
+    os.system("clear")
+    print("\033[92m ^ ^\033[0m")
+    print("\033[92m(\033[91mO,O\033[92m)\033[0m")
+    print("\033[92m(   ) \033[92mStatus\033[93m Server & Client [2] Menu\033[0m")
+    print('\033[92m "-"\033[93m════════════════════════════════\033[0m')
+    print("\033[93m╭───────────────────────────────────────╮\033[0m")
+    print("\033[93m=== Checking L2TP/IPsec Status ===\033[0m")
+
+    server_info = check_interface(server_iface)
+    client_info = check_interface(client_iface)
+    ipsec_info = check_ipsec()
+
+    summary_lines = []
+
+    summary_lines.append(f"\033[93mInterface \033[92m(Server)\033[93m: \033[97m{server_iface}\033[0m")
+    if not server_info["interface_found"]:
+        summary_lines.append(f"  → {RED}NOT found on system{RESET}")
+    else:
+        summary_lines.append(f"  → {GREEN}Found{RESET}")
+        
+        if server_info["operstate_up"]:
+            summary_lines.append(f"  - State: {GREEN}UP{RESET}")
+        else:
+            summary_lines.append(f"  - State: {RED}DOWN{RESET}")
+
+        if server_info["has_ip"]:
+            summary_lines.append(f"  - IP assigned: {GREEN}Yes{RESET}")
+        else:
+            summary_lines.append(f"  - IP assigned: {RED}No{RESET}")
+
+        if server_info["l2tp_session_found"]:
+            summary_lines.append(f"  - L2TP session: {GREEN}Found{RESET}")
+        else:
+            summary_lines.append(f"  - L2TP session: {RED}Not found{RESET}")
+
+    summary_lines.append("")  
+
+    summary_lines.append(f"\033[93mInterface\033[92m (Client)\033[93m:\033[97m {client_iface}\033[0m")
+    if not client_info["interface_found"]:
+        summary_lines.append(f"  → {RED}NOT found on system{RESET}")
+    else:
+        summary_lines.append(f"  → {GREEN}Found{RESET}")
+        if client_info["operstate_up"]:
+            summary_lines.append(f"  - State: {GREEN}UP{RESET}")
+        else:
+            summary_lines.append(f"  - State: {RED}DOWN{RESET}")
+
+        if client_info["has_ip"]:
+            summary_lines.append(f"  - IP assigned: {GREEN}Yes{RESET}")
+        else:
+            summary_lines.append(f"  - IP assigned: {RED}No{RESET}")
+
+        if client_info["l2tp_session_found"]:
+            summary_lines.append(f"  - L2TP session: {GREEN}Found{RESET}")
+        else:
+            summary_lines.append(f"  - L2TP session: {RED}Not found{RESET}")
+
+    summary_lines.append("")  
+
+    summary_lines.append("\033[93mIPsec\033[0m")
+    if not ipsec_info["ipsec_command_found"]:
+        summary_lines.append(f"  → {RED}'ipsec' command NOT found (not installed?){RESET}")
+    else:
+        if not ipsec_info["ipsec_running"]:
+            summary_lines.append(f"  → {RED}Service NOT running or 'ipsec status' failed{RESET}")
+        else:
+            summary_lines.append(f"  → {GREEN}Service is running{RESET}")
+            if ipsec_info["active_sas"]:
+                summary_lines.append(f"  - Active SAs: {GREEN}Yes{RESET}")
+            else:
+                summary_lines.append(f"  - Active SAs: {RED}No{RESET}")
+
+    print_in_box(summary_lines)
+
+    print(f"\n{GREEN}=== L2TP/IPsec Check Complete ==={RESET}")
+
+#3
+def status_l2tp3():
+    server_iface = "l2tpeth2"
+    client_iface = "l2tpeth0"
+
+    os.system("clear")
+    print("\033[92m ^ ^\033[0m")
+    print("\033[92m(\033[91mO,O\033[92m)\033[0m")
+    print("\033[92m(   ) \033[92mStatus\033[93m Server & Client [3] Menu\033[0m")
+    print('\033[92m "-"\033[93m════════════════════════════════\033[0m')
+    print("\033[93m╭───────────────────────────────────────╮\033[0m")
+    print("\033[93m=== Checking L2TP/IPsec Status ===\033[0m")
+
+    server_info = check_interface(server_iface)
+    client_info = check_interface(client_iface)
+    ipsec_info = check_ipsec()
+
+    summary_lines = []
+
+    summary_lines.append(f"\033[93mInterface \033[92m(Server)\033[93m: \033[97m{server_iface}\033[0m")
+    if not server_info["interface_found"]:
+        summary_lines.append(f"  → {RED}NOT found on system{RESET}")
+    else:
+        summary_lines.append(f"  → {GREEN}Found{RESET}")
+        
+        if server_info["operstate_up"]:
+            summary_lines.append(f"  - State: {GREEN}UP{RESET}")
+        else:
+            summary_lines.append(f"  - State: {RED}DOWN{RESET}")
+
+        if server_info["has_ip"]:
+            summary_lines.append(f"  - IP assigned: {GREEN}Yes{RESET}")
+        else:
+            summary_lines.append(f"  - IP assigned: {RED}No{RESET}")
+
+        if server_info["l2tp_session_found"]:
+            summary_lines.append(f"  - L2TP session: {GREEN}Found{RESET}")
+        else:
+            summary_lines.append(f"  - L2TP session: {RED}Not found{RESET}")
+
+    summary_lines.append("")  
+
+    summary_lines.append(f"\033[93mInterface\033[92m (Client)\033[93m:\033[97m {client_iface}\033[0m")
+    if not client_info["interface_found"]:
+        summary_lines.append(f"  → {RED}NOT found on system{RESET}")
+    else:
+        summary_lines.append(f"  → {GREEN}Found{RESET}")
+        if client_info["operstate_up"]:
+            summary_lines.append(f"  - State: {GREEN}UP{RESET}")
+        else:
+            summary_lines.append(f"  - State: {RED}DOWN{RESET}")
+
+        if client_info["has_ip"]:
+            summary_lines.append(f"  - IP assigned: {GREEN}Yes{RESET}")
+        else:
+            summary_lines.append(f"  - IP assigned: {RED}No{RESET}")
+
+        if client_info["l2tp_session_found"]:
+            summary_lines.append(f"  - L2TP session: {GREEN}Found{RESET}")
+        else:
+            summary_lines.append(f"  - L2TP session: {RED}Not found{RESET}")
+
+    summary_lines.append("")  
+
+    summary_lines.append("\033[93mIPsec\033[0m")
+    if not ipsec_info["ipsec_command_found"]:
+        summary_lines.append(f"  → {RED}'ipsec' command NOT found (not installed?){RESET}")
+    else:
+        if not ipsec_info["ipsec_running"]:
+            summary_lines.append(f"  → {RED}Service NOT running or 'ipsec status' failed{RESET}")
+        else:
+            summary_lines.append(f"  → {GREEN}Service is running{RESET}")
+            if ipsec_info["active_sas"]:
+                summary_lines.append(f"  - Active SAs: {GREEN}Yes{RESET}")
+            else:
+                summary_lines.append(f"  - Active SAs: {RED}No{RESET}")
+
+    print_in_box(summary_lines)
+
+    print(f"\n{GREEN}=== L2TP/IPsec Check Complete ==={RESET}")
+
+#4
+def status_l2tp4():
+    server_iface = "l2tpeth3"
+    client_iface = "l2tpeth0"
+
+    os.system("clear")
+    print("\033[92m ^ ^\033[0m")
+    print("\033[92m(\033[91mO,O\033[92m)\033[0m")
+    print("\033[92m(   ) \033[92mStatus\033[93m Server & Client [4] Menu\033[0m")
+    print('\033[92m "-"\033[93m════════════════════════════════\033[0m')
+    print("\033[93m╭───────────────────────────────────────╮\033[0m")
+    print("\033[93m=== Checking L2TP/IPsec Status ===\033[0m")
+
+    server_info = check_interface(server_iface)
+    client_info = check_interface(client_iface)
+    ipsec_info = check_ipsec()
+
+    summary_lines = []
+
+    summary_lines.append(f"\033[93mInterface \033[92m(Server)\033[93m: \033[97m{server_iface}\033[0m")
+    if not server_info["interface_found"]:
+        summary_lines.append(f"  → {RED}NOT found on system{RESET}")
+    else:
+        summary_lines.append(f"  → {GREEN}Found{RESET}")
+        
+        if server_info["operstate_up"]:
+            summary_lines.append(f"  - State: {GREEN}UP{RESET}")
+        else:
+            summary_lines.append(f"  - State: {RED}DOWN{RESET}")
+
+        if server_info["has_ip"]:
+            summary_lines.append(f"  - IP assigned: {GREEN}Yes{RESET}")
+        else:
+            summary_lines.append(f"  - IP assigned: {RED}No{RESET}")
+
+        if server_info["l2tp_session_found"]:
+            summary_lines.append(f"  - L2TP session: {GREEN}Found{RESET}")
+        else:
+            summary_lines.append(f"  - L2TP session: {RED}Not found{RESET}")
+
+    summary_lines.append("")  
+
+    summary_lines.append(f"\033[93mInterface\033[92m (Client)\033[93m:\033[97m {client_iface}\033[0m")
+    if not client_info["interface_found"]:
+        summary_lines.append(f"  → {RED}NOT found on system{RESET}")
+    else:
+        summary_lines.append(f"  → {GREEN}Found{RESET}")
+        if client_info["operstate_up"]:
+            summary_lines.append(f"  - State: {GREEN}UP{RESET}")
+        else:
+            summary_lines.append(f"  - State: {RED}DOWN{RESET}")
+
+        if client_info["has_ip"]:
+            summary_lines.append(f"  - IP assigned: {GREEN}Yes{RESET}")
+        else:
+            summary_lines.append(f"  - IP assigned: {RED}No{RESET}")
+
+        if client_info["l2tp_session_found"]:
+            summary_lines.append(f"  - L2TP session: {GREEN}Found{RESET}")
+        else:
+            summary_lines.append(f"  - L2TP session: {RED}Not found{RESET}")
+
+    summary_lines.append("")  
+
+    summary_lines.append("\033[93mIPsec\033[0m")
+    if not ipsec_info["ipsec_command_found"]:
+        summary_lines.append(f"  → {RED}'ipsec' command NOT found (not installed?){RESET}")
+    else:
+        if not ipsec_info["ipsec_running"]:
+            summary_lines.append(f"  → {RED}Service NOT running or 'ipsec status' failed{RESET}")
+        else:
+            summary_lines.append(f"  → {GREEN}Service is running{RESET}")
+            if ipsec_info["active_sas"]:
+                summary_lines.append(f"  - Active SAs: {GREEN}Yes{RESET}")
+            else:
+                summary_lines.append(f"  - Active SAs: {RED}No{RESET}")
+
+    print_in_box(summary_lines)
+
+    print(f"\n{GREEN}=== L2TP/IPsec Check Complete ==={RESET}")
+
+#5
+def status_l2tp5():
+    server_iface = "l2tpeth4"
+    client_iface = "l2tpeth0"
+
+    os.system("clear")
+    print("\033[92m ^ ^\033[0m")
+    print("\033[92m(\033[91mO,O\033[92m)\033[0m")
+    print("\033[92m(   ) \033[92mStatus\033[93m Server & Client [5] Menu\033[0m")
+    print('\033[92m "-"\033[93m════════════════════════════════\033[0m')
+    print("\033[93m╭───────────────────────────────────────╮\033[0m")
+    print("\033[93m=== Checking L2TP/IPsec Status ===\033[0m")
+
+    server_info = check_interface(server_iface)
+    client_info = check_interface(client_iface)
+    ipsec_info = check_ipsec()
+
+    summary_lines = []
+
+    summary_lines.append(f"\033[93mInterface \033[92m(Server)\033[93m: \033[97m{server_iface}\033[0m")
+    if not server_info["interface_found"]:
+        summary_lines.append(f"  → {RED}NOT found on system{RESET}")
+    else:
+        summary_lines.append(f"  → {GREEN}Found{RESET}")
+        
+        if server_info["operstate_up"]:
+            summary_lines.append(f"  - State: {GREEN}UP{RESET}")
+        else:
+            summary_lines.append(f"  - State: {RED}DOWN{RESET}")
+
+        if server_info["has_ip"]:
+            summary_lines.append(f"  - IP assigned: {GREEN}Yes{RESET}")
+        else:
+            summary_lines.append(f"  - IP assigned: {RED}No{RESET}")
+
+        if server_info["l2tp_session_found"]:
+            summary_lines.append(f"  - L2TP session: {GREEN}Found{RESET}")
+        else:
+            summary_lines.append(f"  - L2TP session: {RED}Not found{RESET}")
+
+    summary_lines.append("")  
+
+    summary_lines.append(f"\033[93mInterface\033[92m (Client)\033[93m:\033[97m {client_iface}\033[0m")
+    if not client_info["interface_found"]:
+        summary_lines.append(f"  → {RED}NOT found on system{RESET}")
+    else:
+        summary_lines.append(f"  → {GREEN}Found{RESET}")
+        if client_info["operstate_up"]:
+            summary_lines.append(f"  - State: {GREEN}UP{RESET}")
+        else:
+            summary_lines.append(f"  - State: {RED}DOWN{RESET}")
+
+        if client_info["has_ip"]:
+            summary_lines.append(f"  - IP assigned: {GREEN}Yes{RESET}")
+        else:
+            summary_lines.append(f"  - IP assigned: {RED}No{RESET}")
+
+        if client_info["l2tp_session_found"]:
+            summary_lines.append(f"  - L2TP session: {GREEN}Found{RESET}")
+        else:
+            summary_lines.append(f"  - L2TP session: {RED}Not found{RESET}")
+
+    summary_lines.append("")  
+
+    summary_lines.append("\033[93mIPsec\033[0m")
+    if not ipsec_info["ipsec_command_found"]:
+        summary_lines.append(f"  → {RED}'ipsec' command NOT found (not installed?){RESET}")
+    else:
+        if not ipsec_info["ipsec_running"]:
+            summary_lines.append(f"  → {RED}Service NOT running or 'ipsec status' failed{RESET}")
+        else:
+            summary_lines.append(f"  → {GREEN}Service is running{RESET}")
+            if ipsec_info["active_sas"]:
+                summary_lines.append(f"  - Active SAs: {GREEN}Yes{RESET}")
+            else:
+                summary_lines.append(f"  - Active SAs: {RED}No{RESET}")
+
+    print_in_box(summary_lines)
+
+    print(f"\n{GREEN}=== L2TP/IPsec Check Complete ==={RESET}")
+
+
+#ipsec timer 
+def ipsec_timer():
+    print("\033[93m───────────────────────────────────────\033[0m")
+    display_notification("\033[93mQuestion time !\033[0m")
+    print("\033[93m───────────────────────────────────────\033[0m")
+    enable_reset = input("\033[93mDo you want to edit \033[96mIPSEC \033[92mreset time\033[93m? (\033[92myes\033[93m/\033[91mno\033[93m): \033[0m").lower()
+    if enable_reset in ['yes', 'y']:
+        print("\033[93m╭───────────────────────────────────────╮\033[0m")
+        print('1. \033[92mHour\033[0m')
+        print('2. \033[93mMinute\033[0m')
+        print("\033[93m╰───────────────────────────────────────╯\033[0m")
+        
+        time_unit_choice = input("\033[93mEnter your choice :\033[0m ").strip()
+        if time_unit_choice == '1':
+            time_unit = 'hour'
+        elif time_unit_choice == '2':
+            time_unit = 'minute'
+        else:
+            print("\033[91mWrong choice\033[0m")
+            return
+        
+        time_value = input("\033[93mEnter the \033[92mdesired input\033[93m:\033[0m ").strip()
+        interval_seconds = int(time_value) * 3600 if time_unit == 'hour' else int(time_value) * 60
+        reset_ipsec(interval_seconds)
+        print("\033[93m────────────────────────────────────────\033[0m")
+
+def reset_ipsec(interval):
+    service_name = "ipsecreset.service"
+
+    daemon_script_content = f"""#!/bin/bash
+INTERVAL={interval}
+
+while true; do
+    /bin/bash /etc/reset_ipsec.sh
+    sleep $INTERVAL
+done
+"""
+
+    with open("/usr/local/bin/ipsec_daemon.sh", "w") as daemon_script_file:
+        daemon_script_file.write(daemon_script_content)
+
+    subprocess.run(["chmod", "+x", "/usr/local/bin/ipsec_daemon.sh"])
+
+    service_content = f"""[Unit]
+Description=Custom Daemon
+
+[Service]
+ExecStart=/usr/local/bin/ipsec_daemon.sh
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+"""
+
+    with open(f"/etc/systemd/system/{service_name}", "w") as service_file:
+        service_file.write(service_content)
+
+    ipsec_reset_script_content = """#!/bin/bash
+systemctl daemon-reload 
+sudo ipsec stop
+systemctl restart strong-azumi1 
+sudo journalctl --vacuum-size=1M --unit=strong-azumi1.service
+"""
+
+    with open("/etc/reset_ipsec.sh", "w") as script_file:
+        script_file.write(ipsec_reset_script_content)
+
+    subprocess.run(["chmod", "+x", "/etc/reset_ipsec.sh"])
+    subprocess.run(["systemctl", "daemon-reload"])
+    subprocess.run(["systemctl", "enable", service_name])
+    subprocess.run(["systemctl", "restart", service_name])
+   
+#uninstall 
+def l2tp_uninstall_mnu():
+
+    if os.geteuid() != 0:
+        print("ERROR: Please run this script as root (using sudo).")
+        return
+
+    while True:
+        os.system("clear")
+        print("\033[92m ^ ^\033[0m")
+        print("\033[92m(\033[91mO,O\033[92m)\033[0m")
+        print("\033[92m(   ) \033[92mL2TP Uninstall \033[93mMenu\033[0m")
+        print(
+        '\033[92m "-"\033[93m═══════════════════════════════════════════════════\033[0m'
+        )
+        print("\033[93m╭───────────────────────────────────────╮\033[0m")
+        print("1)\033[93m Server & Client [1]\033[0m")
+        print("2)\033[93m Server & Client [2]\033[0m")
+        print("3)\033[92m Server & Client [3]\033[0m")
+        print("4)\033[93m Server & Client [4]\033[0m")
+        print("5)\033[93m Server & Client [5]\033[0m")
+        print("q) Back to previous menu")
+        print("\033[93m╰───────────────────────────────────────╯\033[0m")
+
+        choice = input("Choose an option [1-q]: ").strip()
+
+        if choice == '1':
+            uninstall_l2tp1()
+            break
+        elif choice == '2':
+            uninstall_l2tp2()
+            break
+        elif choice == '3':
+            uninstall_l2tp3()
+            break
+        elif choice == '4':
+            uninstall_l2tp4()
+            break
+        elif choice == '5':
+            uninstall_l2tp5()
+            break
+        elif choice == 'q':
+            l2tp_v3_mnu()
+        else:
+            print("Wrong choice. Please select corrent input.")
+
+
+SERVICE_NAME = "strong-azumi1.service"
+KEEPALIVE_SERVICE = "l2tp-keepalive.service"
+KEEPALIVE_SCRIPT = "/usr/local/bin/l2tp_keepalive.sh"
+KEEPALIVE_SERVICE_PATH = f"/etc/systemd/system/{KEEPALIVE_SERVICE}"
+KEEPALIVE_SERVER1_SERVICE = "l2tp-keepalive1.service"
+KEEPALIVE_SERVER1_SCRIPT = "/usr/local/bin/l2tp_keepalive1.sh"
+KEEPALIVE_SERVER1_PATH = f"/etc/systemd/system/{KEEPALIVE_SERVER1_SERVICE}"
+KEEPALIVE_SERVER2_SERVICE = "l2tp-keepalive2.service"
+KEEPALIVE_SERVER2_SCRIPT = "/usr/local/bin/l2tp_keepalive2.sh"
+KEEPALIVE_SERVER2_PATH = f"/etc/systemd/system/{KEEPALIVE_SERVER2_SERVICE}"
+KEEPALIVE_SERVER3_SERVICE = "l2tp-keepalive3.service"
+KEEPALIVE_SERVER3_SCRIPT = "/usr/local/bin/l2tp_keepalive3.sh"
+KEEPALIVE_SERVER3_PATH = f"/etc/systemd/system/{KEEPALIVE_SERVER3_SERVICE}"
+KEEPALIVE_SERVER4_SERVICE = "l2tp-keepalive4.service"
+KEEPALIVE_SERVER4_SCRIPT = "/usr/local/bin/l2tp_keepalive4.sh"
+KEEPALIVE_SERVER4_PATH = f"/etc/systemd/system/{KEEPALIVE_SERVER4_SERVICE}"
+KEEPALIVE_SERVER5_SERVICE = "l2tp-keepalive5.service"
+KEEPALIVE_SERVER5_SCRIPT = "/usr/local/bin/l2tp_keepalive5.sh"
+KEEPALIVE_SERVER5_PATH = f"/etc/systemd/system/{KEEPALIVE_SERVER5_SERVICE}"
+
+def uninstall_l2tp1():
+    if os.path.isfile(f"/etc/systemd/system/{SERVICE_NAME}"):
+        try:
+            subprocess.run(["systemctl", "stop", SERVICE_NAME], check=False)
+            subprocess.run(["systemctl", "disable", SERVICE_NAME], check=False)
+        except Exception as e:
+            print("\033[91mWarning: Failed to stop/disable main service.\033[0m")
+    else:
+        print("\033[93mNo main service file found. Skipping main service stop/disable.\033[0m")
+
+    remove_xl2tpd = input(
+        "\033[93mDo you want to uninstall \033[92mxl2tpd\033[93m? (\033[92my\033[93m/\033[91mn\033[93m): \033[0m"
+    ).strip().lower()
+
+    if remove_xl2tpd in ['y', 'yes']:
+        try:
+            subprocess.run(["apt", "remove", "-y", "xl2tpd"], check=False)
+        except Exception as e:
+            print("\033[93mCouldn't remove xl2tpd package.\033[0m")
+
+    remove_strongswan = input(
+        "\033[93mDo you want to uninstall \033[92mIPSEC\033[93m? (\033[92my\033[93m/\033[91mn\033[93m): \033[0m"
+    ).strip().lower()
+
+    if remove_strongswan in ['y', 'yes']:
+        try:
+            subprocess.run(["apt", "remove", "-y", "strongswan"], check=False)
+        except Exception as e:
+            print("\033[93mCouldn't remove strongswan package.\033[0m")
+
+    files_always_remove = [
+        f"/etc/systemd/system/{SERVICE_NAME}",
+        "/usr/local/bin/l2tp_server1.sh",
+        "/usr/local/bin/l2tp_client1.sh",
+        KEEPALIVE_SCRIPT,
+        KEEPALIVE_SERVICE_PATH,
+        KEEPALIVE_SERVER1_SCRIPT,
+        KEEPALIVE_SERVER1_PATH
+    ]
+
+    files_conditional_remove = []
+
+    if remove_xl2tpd in ['y', 'yes']:
+        files_conditional_remove.extend([
+            "/etc/xl2tpd/xl2tpd.conf",
+            "/etc/ppp/options.xl2tpd",
+        ])
+
+    if remove_strongswan in ['y', 'yes']:
+        files_conditional_remove.extend([
+            "/etc/ipsec.conf",
+            "/etc/ipsec.secrets",
+        ])
+
+    display_notification("\033[93mRemoving config files (always)...\033[0m")
+    for fpath in files_always_remove:
+        if os.path.exists(fpath):
+            try:
+                os.remove(fpath)
+                print(f"\033[92mRemoved:\033[97m {fpath}\033[0m")
+            except Exception as e:
+                print(f"\033[91mWARNING:\033[0m Could not remove {fpath}: {e}")
+        else:
+            print(f"\033[93mSkipping (not found):\033[97m {fpath}\033[0m")
+
+    display_notification("\033[93mRemoving config files (conditional)...\033[0m")
+    for fpath in files_conditional_remove:
+        if os.path.exists(fpath):
+            try:
+                os.remove(fpath)
+                print(f"\033[92mRemoved:\033[97m {fpath}\033[0m")
+            except Exception as e:
+                print(f"\033[91mWARNING:\033[0m Could not remove {fpath}: {e}")
+        else:
+            print(f"\033[93mSkipping (not found):\033[97m {fpath}\033[0m")
+
+    display_notification("\033[93mRemoving L2TP session/tunnel...\033[0m")
+    try:
+        subprocess.run(["ip", "l2tp", "del", "session", "tunnel_id", "1", "session_id", "1"], check=False)
+    except Exception as e:
+        print("\033[91mWarning: Could not remove L2TP session.\033[0m")
+
+    try:
+        subprocess.run(["ip", "l2tp", "del", "tunnel", "tunnel_id", "1"], check=False)
+    except Exception as e:
+        print("\033[91mWarning: Could not remove L2TP tunnel.\033[0m")
+
+    if remove_xl2tpd in ['y', 'yes']:
+        ufw_path = shutil.which("ufw")
+        if ufw_path:
+            display_notification("\033[93mRemoving UFW rule for 1701/udp...\033[0m")
+            try:
+                subprocess.run(["ufw", "delete", "allow", "1701/udp"], check=False)
+            except Exception as e:
+                print("\033[93mWarning: Could not remove UFW rule for 1701/udp.\033[0m")
+        else:
+            print("\033[91mufw not found. Skipping UFW rule removal.\033[0m")
+    
+    if os.path.exists(KEEPALIVE_SERVER1_PATH):
+        display_notification("\033[93mRemoving Keepalive service...\033[0m")
+        try:
+            subprocess.run(["systemctl", "stop", KEEPALIVE_SERVER1_PATH], check=False)
+            subprocess.run(["systemctl", "disable", KEEPALIVE_SERVER1_PATH], check=False)
+            os.remove(KEEPALIVE_SERVER1_PATH)
+            print("\033[92mKeepalive service removed.\033[0m")
+        except Exception as e:
+            print(f"\033[91mWARNING:\033[0m Failed to remove keepalive service: {e}")
+    else:
+        print("\033[93mKeepalive service not found. Skipping removal.\033[0m")
+
+    if os.path.exists(KEEPALIVE_SERVICE_PATH):
+        display_notification("\033[93mRemoving Keepalive service...\033[0m")
+        try:
+            subprocess.run(["systemctl", "stop", KEEPALIVE_SERVICE], check=False)
+            subprocess.run(["systemctl", "disable", KEEPALIVE_SERVICE], check=False)
+            os.remove(KEEPALIVE_SERVICE_PATH)
+            print("\033[92mKeepalive service removed.\033[0m")
+        except Exception as e:
+            print(f"\033[91mWARNING:\033[0m Failed to remove keepalive service: {e}")
+    else:
+        print("\033[93mKeepalive service not found. Skipping removal.\033[0m")
+
+    try:
+        subprocess.run(["systemctl", "daemon-reload"], check=False)
+    except Exception as e:
+        print("\033[91mWarning:\033[0m Could not reload systemd daemon.")
+
+    display_checkmark("\033[92mL2TP Uninstall Complete!\033[0m")
+
+def uninstall_l2tp2():
+    if os.path.isfile(f"/etc/systemd/system/{SERVICE_NAME}"):
+        try:
+            subprocess.run(["systemctl", "stop", SERVICE_NAME], check=False)
+            subprocess.run(["systemctl", "disable", SERVICE_NAME], check=False)
+        except Exception as e:
+            print("\033[91mWarning: Failed to stop/disable main service.\033[0m")
+    else:
+        print("\033[93mNo main service file found. Skipping main service stop/disable.\033[0m")
+
+    remove_xl2tpd = input(
+        "\033[93mDo you want to uninstall \033[92mxl2tpd\033[93m? (\033[92my\033[93m/\033[91mn\033[93m): \033[0m"
+    ).strip().lower()
+
+    if remove_xl2tpd in ['y', 'yes']:
+        try:
+            subprocess.run(["apt", "remove", "-y", "xl2tpd"], check=False)
+        except Exception as e:
+            print("\033[93mCouldn't remove xl2tpd package.\033[0m")
+
+    remove_strongswan = input(
+        "\033[93mDo you want to uninstall \033[92mIPSEC\033[93m? (\033[92my\033[93m/\033[91mn\033[93m): \033[0m"
+    ).strip().lower()
+
+    if remove_strongswan in ['y', 'yes']:
+        try:
+            subprocess.run(["apt", "remove", "-y", "strongswan"], check=False)
+        except Exception as e:
+            print("\033[93mCouldn't remove strongswan package.\033[0m")
+
+    files_always_remove = [
+        f"/etc/systemd/system/{SERVICE_NAME}",
+        "/usr/local/bin/l2tp_server2.sh",
+        "/usr/local/bin/l2tp_client2.sh",
+        KEEPALIVE_SCRIPT,
+        KEEPALIVE_SERVICE_PATH,
+        KEEPALIVE_SERVER2_SCRIPT,
+        KEEPALIVE_SERVER2_PATH
+    ]
+
+    files_conditional_remove = []
+
+    if remove_xl2tpd in ['y', 'yes']:
+        files_conditional_remove.extend([
+            "/etc/xl2tpd/xl2tpd.conf",
+            "/etc/ppp/options.xl2tpd",
+        ])
+
+    if remove_strongswan in ['y', 'yes']:
+        files_conditional_remove.extend([
+            "/etc/ipsec.conf",
+            "/etc/ipsec.secrets",
+        ])
+
+    display_notification("\033[93mRemoving config files (always)...\033[0m")
+    for fpath in files_always_remove:
+        if os.path.exists(fpath):
+            try:
+                os.remove(fpath)
+                print(f"\033[92mRemoved:\033[97m {fpath}\033[0m")
+            except Exception as e:
+                print(f"\033[91mWARNING:\033[0m Could not remove {fpath}: {e}")
+        else:
+            print(f"\033[93mSkipping (not found):\033[97m {fpath}\033[0m")
+
+    display_notification("\033[93mRemoving config files (conditional)...\033[0m")
+    for fpath in files_conditional_remove:
+        if os.path.exists(fpath):
+            try:
+                os.remove(fpath)
+                print(f"\033[92mRemoved:\033[97m {fpath}\033[0m")
+            except Exception as e:
+                print(f"\033[91mWARNING:\033[0m Could not remove {fpath}: {e}")
+        else:
+            print(f"\033[93mSkipping (not found):\033[97m {fpath}\033[0m")
+
+    display_notification("\033[93mRemoving L2TP session/tunnel...\033[0m")
+    try:
+        subprocess.run(["ip", "l2tp", "del", "session", "tunnel_id", "2", "session_id", "2"], check=False)
+    except Exception as e:
+        print("\033[91mWarning: Could not remove L2TP session.\033[0m")
+
+    try:
+        subprocess.run(["ip", "l2tp", "del", "tunnel", "tunnel_id", "2"], check=False)
+    except Exception as e:
+        print("\033[91mWarning: Could not remove L2TP tunnel.\033[0m")
+
+    if remove_xl2tpd in ['y', 'yes']:
+        ufw_path = shutil.which("ufw")
+        if ufw_path:
+            display_notification("\033[93mRemoving UFW rule for 1701/udp...\033[0m")
+            try:
+                subprocess.run(["ufw", "delete", "allow", "1701/udp"], check=False)
+            except Exception as e:
+                print("\033[93mWarning: Could not remove UFW rule for 1701/udp.\033[0m")
+        else:
+            print("\033[91mufw not found. Skipping UFW rule removal.\033[0m")
+    
+    if os.path.exists(KEEPALIVE_SERVER2_PATH):
+        display_notification("\033[93mRemoving Keepalive service...\033[0m")
+        try:
+            subprocess.run(["systemctl", "stop", KEEPALIVE_SERVER2_PATH], check=False)
+            subprocess.run(["systemctl", "disable", KEEPALIVE_SERVER2_PATH], check=False)
+            os.remove(KEEPALIVE_SERVER2_PATH)
+            print("\033[92mKeepalive service removed.\033[0m")
+        except Exception as e:
+            print(f"\033[91mWARNING:\033[0m Failed to remove keepalive service: {e}")
+    else:
+        print("\033[93mKeepalive service not found. Skipping removal.\033[0m")
+
+    if os.path.exists(KEEPALIVE_SERVICE_PATH):
+        display_notification("\033[93mRemoving Keepalive service...\033[0m")
+        try:
+            subprocess.run(["systemctl", "stop", KEEPALIVE_SERVICE], check=False)
+            subprocess.run(["systemctl", "disable", KEEPALIVE_SERVICE], check=False)
+            os.remove(KEEPALIVE_SERVICE_PATH)
+            print("\033[92mKeepalive service removed.\033[0m")
+        except Exception as e:
+            print(f"\033[91mWARNING:\033[0m Failed to remove keepalive service: {e}")
+    else:
+        print("\033[93mKeepalive service not found. Skipping removal.\033[0m")
+
+    try:
+        subprocess.run(["systemctl", "daemon-reload"], check=False)
+    except Exception as e:
+        print("\033[91mWarning:\033[0m Could not reload systemd daemon.")
+
+    display_checkmark("\033[92mL2TP Uninstall Complete!\033[0m")
+
+def uninstall_l2tp3():
+    if os.path.isfile(f"/etc/systemd/system/{SERVICE_NAME}"):
+        try:
+            subprocess.run(["systemctl", "stop", SERVICE_NAME], check=False)
+            subprocess.run(["systemctl", "disable", SERVICE_NAME], check=False)
+        except Exception as e:
+            print("\033[91mWarning: Failed to stop/disable main service.\033[0m")
+    else:
+        print("\033[93mNo main service file found. Skipping main service stop/disable.\033[0m")
+
+    remove_xl2tpd = input(
+        "\033[93mDo you want to uninstall \033[92mxl2tpd\033[93m? (\033[92my\033[93m/\033[91mn\033[93m): \033[0m"
+    ).strip().lower()
+
+    if remove_xl2tpd in ['y', 'yes']:
+        try:
+            subprocess.run(["apt", "remove", "-y", "xl2tpd"], check=False)
+        except Exception as e:
+            print("\033[93mCouldn't remove xl2tpd package.\033[0m")
+
+    remove_strongswan = input(
+        "\033[93mDo you want to uninstall \033[92mIPSEC\033[93m? (\033[92my\033[93m/\033[91mn\033[93m): \033[0m"
+    ).strip().lower()
+
+    if remove_strongswan in ['y', 'yes']:
+        try:
+            subprocess.run(["apt", "remove", "-y", "strongswan"], check=False)
+        except Exception as e:
+            print("\033[93mCouldn't remove strongswan package.\033[0m")
+
+    files_always_remove = [
+        f"/etc/systemd/system/{SERVICE_NAME}",
+        "/usr/local/bin/l2tp_server3.sh",
+        "/usr/local/bin/l2tp_client3.sh",
+        KEEPALIVE_SCRIPT,
+        KEEPALIVE_SERVICE_PATH,
+        KEEPALIVE_SERVER3_SCRIPT,
+        KEEPALIVE_SERVER3_PATH
+    ]
+
+    files_conditional_remove = []
+
+    if remove_xl2tpd in ['y', 'yes']:
+        files_conditional_remove.extend([
+            "/etc/xl2tpd/xl2tpd.conf",
+            "/etc/ppp/options.xl2tpd",
+        ])
+
+    if remove_strongswan in ['y', 'yes']:
+        files_conditional_remove.extend([
+            "/etc/ipsec.conf",
+            "/etc/ipsec.secrets",
+        ])
+
+    display_notification("\033[93mRemoving config files (always)...\033[0m")
+    for fpath in files_always_remove:
+        if os.path.exists(fpath):
+            try:
+                os.remove(fpath)
+                print(f"\033[92mRemoved:\033[97m {fpath}\033[0m")
+            except Exception as e:
+                print(f"\033[91mWARNING:\033[0m Could not remove {fpath}: {e}")
+        else:
+            print(f"\033[93mSkipping (not found):\033[97m {fpath}\033[0m")
+
+    display_notification("\033[93mRemoving config files (conditional)...\033[0m")
+    for fpath in files_conditional_remove:
+        if os.path.exists(fpath):
+            try:
+                os.remove(fpath)
+                print(f"\033[92mRemoved:\033[97m {fpath}\033[0m")
+            except Exception as e:
+                print(f"\033[91mWARNING:\033[0m Could not remove {fpath}: {e}")
+        else:
+            print(f"\033[93mSkipping (not found):\033[97m {fpath}\033[0m")
+
+    display_notification("\033[93mRemoving L2TP session/tunnel...\033[0m")
+    try:
+        subprocess.run(["ip", "l2tp", "del", "session", "tunnel_id", "1", "session_id", "1"], check=False)
+    except Exception as e:
+        print("\033[91mWarning: Could not remove L2TP session.\033[0m")
+
+    try:
+        subprocess.run(["ip", "l2tp", "del", "tunnel", "tunnel_id", "1"], check=False)
+    except Exception as e:
+        print("\033[91mWarning: Could not remove L2TP tunnel.\033[0m")
+
+    if remove_xl2tpd in ['y', 'yes']:
+        ufw_path = shutil.which("ufw")
+        if ufw_path:
+            display_notification("\033[93mRemoving UFW rule for 1701/udp...\033[0m")
+            try:
+                subprocess.run(["ufw", "delete", "allow", "1701/udp"], check=False)
+            except Exception as e:
+                print("\033[93mWarning: Could not remove UFW rule for 1701/udp.\033[0m")
+        else:
+            print("\033[91mufw not found. Skipping UFW rule removal.\033[0m")
+    
+    if os.path.exists(KEEPALIVE_SERVER3_PATH):
+        display_notification("\033[93mRemoving Keepalive service...\033[0m")
+        try:
+            subprocess.run(["systemctl", "stop", KEEPALIVE_SERVER3_PATH], check=False)
+            subprocess.run(["systemctl", "disable", KEEPALIVE_SERVER3_PATH], check=False)
+            os.remove(KEEPALIVE_SERVER3_PATH)
+            print("\033[92mKeepalive service removed.\033[0m")
+        except Exception as e:
+            print(f"\033[91mWARNING:\033[0m Failed to remove keepalive service: {e}")
+    else:
+        print("\033[93mKeepalive service not found. Skipping removal.\033[0m")
+
+    if os.path.exists(KEEPALIVE_SERVICE_PATH):
+        display_notification("\033[93mRemoving Keepalive service...\033[0m")
+        try:
+            subprocess.run(["systemctl", "stop", KEEPALIVE_SERVICE], check=False)
+            subprocess.run(["systemctl", "disable", KEEPALIVE_SERVICE], check=False)
+            os.remove(KEEPALIVE_SERVICE_PATH)
+            print("\033[92mKeepalive service removed.\033[0m")
+        except Exception as e:
+            print(f"\033[91mWARNING:\033[0m Failed to remove keepalive service: {e}")
+    else:
+        print("\033[93mKeepalive service not found. Skipping removal.\033[0m")
+
+    try:
+        subprocess.run(["systemctl", "daemon-reload"], check=False)
+    except Exception as e:
+        print("\033[91mWarning:\033[0m Could not reload systemd daemon.")
+
+    display_checkmark("\033[92mL2TP Uninstall Complete!\033[0m")
+
+def uninstall_l2tp4():
+    if os.path.isfile(f"/etc/systemd/system/{SERVICE_NAME}"):
+        try:
+            subprocess.run(["systemctl", "stop", SERVICE_NAME], check=False)
+            subprocess.run(["systemctl", "disable", SERVICE_NAME], check=False)
+        except Exception as e:
+            print("\033[91mWarning: Failed to stop/disable main service.\033[0m")
+    else:
+        print("\033[93mNo main service file found. Skipping main service stop/disable.\033[0m")
+
+    remove_xl2tpd = input(
+        "\033[93mDo you want to uninstall \033[92mxl2tpd\033[93m? (\033[92my\033[93m/\033[91mn\033[93m): \033[0m"
+    ).strip().lower()
+
+    if remove_xl2tpd in ['y', 'yes']:
+        try:
+            subprocess.run(["apt", "remove", "-y", "xl2tpd"], check=False)
+        except Exception as e:
+            print("\033[93mCouldn't remove xl2tpd package.\033[0m")
+
+    remove_strongswan = input(
+        "\033[93mDo you want to uninstall \033[92mIPSEC\033[93m? (\033[92my\033[93m/\033[91mn\033[93m): \033[0m"
+    ).strip().lower()
+
+    if remove_strongswan in ['y', 'yes']:
+        try:
+            subprocess.run(["apt", "remove", "-y", "strongswan"], check=False)
+        except Exception as e:
+            print("\033[93mCouldn't remove strongswan package.\033[0m")
+
+    files_always_remove = [
+        f"/etc/systemd/system/{SERVICE_NAME}",
+        "/usr/local/bin/l2tp_server4.sh",
+        "/usr/local/bin/l2tp_client4.sh",
+        KEEPALIVE_SCRIPT,
+        KEEPALIVE_SERVICE_PATH,
+        KEEPALIVE_SERVER4_SCRIPT,
+        KEEPALIVE_SERVER4_PATH
+    ]
+
+    files_conditional_remove = []
+
+    if remove_xl2tpd in ['y', 'yes']:
+        files_conditional_remove.extend([
+            "/etc/xl2tpd/xl2tpd.conf",
+            "/etc/ppp/options.xl2tpd",
+        ])
+
+    if remove_strongswan in ['y', 'yes']:
+        files_conditional_remove.extend([
+            "/etc/ipsec.conf",
+            "/etc/ipsec.secrets",
+        ])
+
+    display_notification("\033[93mRemoving config files (always)...\033[0m")
+    for fpath in files_always_remove:
+        if os.path.exists(fpath):
+            try:
+                os.remove(fpath)
+                print(f"\033[92mRemoved:\033[97m {fpath}\033[0m")
+            except Exception as e:
+                print(f"\033[91mWARNING:\033[0m Could not remove {fpath}: {e}")
+        else:
+            print(f"\033[93mSkipping (not found):\033[97m {fpath}\033[0m")
+
+    display_notification("\033[93mRemoving config files (conditional)...\033[0m")
+    for fpath in files_conditional_remove:
+        if os.path.exists(fpath):
+            try:
+                os.remove(fpath)
+                print(f"\033[92mRemoved:\033[97m {fpath}\033[0m")
+            except Exception as e:
+                print(f"\033[91mWARNING:\033[0m Could not remove {fpath}: {e}")
+        else:
+            print(f"\033[93mSkipping (not found):\033[97m {fpath}\033[0m")
+
+    display_notification("\033[93mRemoving L2TP session/tunnel...\033[0m")
+    try:
+        subprocess.run(["ip", "l2tp", "del", "session", "tunnel_id", "4", "session_id", "4"], check=False)
+    except Exception as e:
+        print("\033[91mWarning: Could not remove L2TP session.\033[0m")
+
+    try:
+        subprocess.run(["ip", "l2tp", "del", "tunnel", "tunnel_id", "4"], check=False)
+    except Exception as e:
+        print("\033[91mWarning: Could not remove L2TP tunnel.\033[0m")
+
+    if remove_xl2tpd in ['y', 'yes']:
+        ufw_path = shutil.which("ufw")
+        if ufw_path:
+            display_notification("\033[93mRemoving UFW rule for 1701/udp...\033[0m")
+            try:
+                subprocess.run(["ufw", "delete", "allow", "1701/udp"], check=False)
+            except Exception as e:
+                print("\033[93mWarning: Could not remove UFW rule for 1701/udp.\033[0m")
+        else:
+            print("\033[91mufw not found. Skipping UFW rule removal.\033[0m")
+
+    if os.path.exists(KEEPALIVE_SERVER4_PATH):
+        display_notification("\033[93mRemoving Keepalive service...\033[0m")
+        try:
+            subprocess.run(["systemctl", "stop", KEEPALIVE_SERVER4_PATH], check=False)
+            subprocess.run(["systemctl", "disable", KEEPALIVE_SERVER4_PATH], check=False)
+            os.remove(KEEPALIVE_SERVER4_PATH)
+            print("\033[92mKeepalive service removed.\033[0m")
+        except Exception as e:
+            print(f"\033[91mWARNING:\033[0m Failed to remove keepalive service: {e}")
+    else:
+        print("\033[93mKeepalive service not found. Skipping removal.\033[0m")
+
+    if os.path.exists(KEEPALIVE_SERVICE_PATH):
+        display_notification("\033[93mRemoving Keepalive service...\033[0m")
+        try:
+            subprocess.run(["systemctl", "stop", KEEPALIVE_SERVICE], check=False)
+            subprocess.run(["systemctl", "disable", KEEPALIVE_SERVICE], check=False)
+            os.remove(KEEPALIVE_SERVICE_PATH)
+            print("\033[92mKeepalive service removed.\033[0m")
+        except Exception as e:
+            print(f"\033[91mWARNING:\033[0m Failed to remove keepalive service: {e}")
+    else:
+        print("\033[93mKeepalive service not found. Skipping removal.\033[0m")
+
+    try:
+        subprocess.run(["systemctl", "daemon-reload"], check=False)
+    except Exception as e:
+        print("\033[91mWarning:\033[0m Could not reload systemd daemon.")
+
+    display_checkmark("\033[92mL2TP Uninstall Complete!\033[0m")
+
+def uninstall_l2tp5():
+    if os.path.isfile(f"/etc/systemd/system/{SERVICE_NAME}"):
+        try:
+            subprocess.run(["systemctl", "stop", SERVICE_NAME], check=False)
+            subprocess.run(["systemctl", "disable", SERVICE_NAME], check=False)
+        except Exception as e:
+            print("\033[91mWarning: Failed to stop/disable main service.\033[0m")
+    else:
+        print("\033[93mNo main service file found. Skipping main service stop/disable.\033[0m")
+
+    remove_xl2tpd = input(
+        "\033[93mDo you want to uninstall \033[92mxl2tpd\033[93m? (\033[92my\033[93m/\033[91mn\033[93m): \033[0m"
+    ).strip().lower()
+
+    if remove_xl2tpd in ['y', 'yes']:
+        try:
+            subprocess.run(["apt", "remove", "-y", "xl2tpd"], check=False)
+        except Exception as e:
+            print("\033[93mCouldn't remove xl2tpd package.\033[0m")
+
+    remove_strongswan = input(
+        "\033[93mDo you want to uninstall \033[92mIPSEC\033[93m? (\033[92my\033[93m/\033[91mn\033[93m): \033[0m"
+    ).strip().lower()
+
+    if remove_strongswan in ['y', 'yes']:
+        try:
+            subprocess.run(["apt", "remove", "-y", "strongswan"], check=False)
+        except Exception as e:
+            print("\033[93mCouldn't remove strongswan package.\033[0m")
+
+    files_always_remove = [
+        f"/etc/systemd/system/{SERVICE_NAME}",
+        "/usr/local/bin/l2tp_server5.sh",
+        "/usr/local/bin/l2tp_client5.sh",
+        KEEPALIVE_SCRIPT,
+        KEEPALIVE_SERVICE_PATH,
+        KEEPALIVE_SERVER5_SCRIPT,
+        KEEPALIVE_SERVER5_PATH,
+    ]
+
+    files_conditional_remove = []
+
+    if remove_xl2tpd in ['y', 'yes']:
+        files_conditional_remove.extend([
+            "/etc/xl2tpd/xl2tpd.conf",
+            "/etc/ppp/options.xl2tpd",
+        ])
+
+    if remove_strongswan in ['y', 'yes']:
+        files_conditional_remove.extend([
+            "/etc/ipsec.conf",
+            "/etc/ipsec.secrets",
+        ])
+
+    display_notification("\033[93mRemoving config files (always)...\033[0m")
+    for fpath in files_always_remove:
+        if os.path.exists(fpath):
+            try:
+                os.remove(fpath)
+                print(f"\033[92mRemoved:\033[97m {fpath}\033[0m")
+            except Exception as e:
+                print(f"\033[91mWARNING:\033[0m Could not remove {fpath}: {e}")
+        else:
+            print(f"\033[93mSkipping (not found):\033[97m {fpath}\033[0m")
+
+    display_notification("\033[93mRemoving config files (conditional)...\033[0m")
+    for fpath in files_conditional_remove:
+        if os.path.exists(fpath):
+            try:
+                os.remove(fpath)
+                print(f"\033[92mRemoved:\033[97m {fpath}\033[0m")
+            except Exception as e:
+                print(f"\033[91mWARNING:\033[0m Could not remove {fpath}: {e}")
+        else:
+            print(f"\033[93mSkipping (not found):\033[97m {fpath}\033[0m")
+
+    display_notification("\033[93mRemoving L2TP session/tunnel...\033[0m")
+    try:
+        subprocess.run(["ip", "l2tp", "del", "session", "tunnel_id", "1", "session_id", "1"], check=False)
+    except Exception as e:
+        print("\033[91mWarning: Could not remove L2TP session.\033[0m")
+
+    try:
+        subprocess.run(["ip", "l2tp", "del", "tunnel", "tunnel_id", "1"], check=False)
+    except Exception as e:
+        print("\033[91mWarning: Could not remove L2TP tunnel.\033[0m")
+
+    if remove_xl2tpd in ['y', 'yes']:
+        ufw_path = shutil.which("ufw")
+        if ufw_path:
+            display_notification("\033[93mRemoving UFW rule for 1701/udp...\033[0m")
+            try:
+                subprocess.run(["ufw", "delete", "allow", "1701/udp"], check=False)
+            except Exception as e:
+                print("\033[93mWarning: Could not remove UFW rule for 1701/udp.\033[0m")
+        else:
+            print("\033[91mufw not found. Skipping UFW rule removal.\033[0m")
+    
+    if os.path.exists(KEEPALIVE_SERVER5_PATH):
+        display_notification("\033[93mRemoving Keepalive service...\033[0m")
+        try:
+            subprocess.run(["systemctl", "stop", KEEPALIVE_SERVER5_PATH], check=False)
+            subprocess.run(["systemctl", "disable", KEEPALIVE_SERVER5_PATH], check=False)
+            os.remove(KEEPALIVE_SERVER5_PATH)
+            print("\033[92mKeepalive service removed.\033[0m")
+        except Exception as e:
+            print(f"\033[91mWARNING:\033[0m Failed to remove keepalive service: {e}")
+    else:
+        print("\033[93mKeepalive service not found. Skipping removal.\033[0m")
+
+    if os.path.exists(KEEPALIVE_SERVICE_PATH):
+        display_notification("\033[93mRemoving Keepalive service...\033[0m")
+        try:
+            subprocess.run(["systemctl", "stop", KEEPALIVE_SERVICE], check=False)
+            subprocess.run(["systemctl", "disable", KEEPALIVE_SERVICE], check=False)
+            os.remove(KEEPALIVE_SERVICE_PATH)
+            print("\033[92mKeepalive service removed.\033[0m")
+        except Exception as e:
+            print(f"\033[91mWARNING:\033[0m Failed to remove keepalive service: {e}")
+    else:
+        print("\033[93mKeepalive service not found. Skipping removal.\033[0m")
+
+    try:
+        subprocess.run(["systemctl", "daemon-reload"], check=False)
+    except Exception as e:
+        print("\033[91mWarning:\033[0m Could not reload systemd daemon.")
+
+    display_checkmark("\033[92mL2TP Uninstall Complete!\033[0m")
+
+#edit local 
+def editlocal_l2tp_menu():
+    os.system("clear")
+    print("\033[92m ^ ^\033[0m")
+    print("\033[92m(\033[91mO,O\033[92m)\033[0m")
+    print("\033[92m(   ) \033[92mL2TP Edit \033[93mMenu\033[0m")
+    print(
+        '\033[92m "-"\033[93m═══════════════════════════════════════════════════\033[0m'
+    )
+    
+    print("\033[93m╭───────────────────────────────────────╮\033[0m")
+    print("\033[93mChoose what to do:\033[0m")
+    print("1. \033[92mServer Configs\033[0m")
+    print("2. \033[93mClients \033[0m")
+    print("q.\033[97mback to previous menu\033[0m")
+    print("\033[93m╰───────────────────────────────────────╯\033[0m")
+    while True:
+        server_type = input("\033[38;5;205mEnter your choice Please: \033[0m")
+        if server_type == "1":
+            edit_l2tp_server_configs()
+            break
+        elif server_type == "2":
+            edit_l2tp_clients()
+            break
+        elif server_type == "q":
+            l2tp_v3_mnu()
+        else:
+            print("Invalid choice.")
+
+def edit_l2tp_server_configs():
+    os.system("clear")
+    print("\033[92m ^ ^\033[0m")
+    print("\033[92m(\033[91mO,O\033[92m)\033[0m")
+    print("\033[92m(   ) \033[92mL2TP Edit \033[93mServer Menu\033[0m")
+    print(
+        '\033[92m "-"\033[93m═══════════════════════════════════════════════════\033[0m'
+    )
+    print("\033[93m╭───────────────────────────────────────╮\033[0m")
+    print("\033[93mChoose what to do:\033[0m")
+    print("1. \033[93mServer Config [1]\033[0m")
+    print("2. \033[93mServer Config [2]\033[0m")
+    print("3. \033[92mServer Config [3]\033[0m")
+    print("4. \033[93mServer Config [4]\033[0m")
+    print("5. \033[93mServer Config [5]\033[0m")
+    print("q.\033[97mback to previous menu\033[0m")
+    print("\033[93m╰───────────────────────────────────────╯\033[0m")
+    while True:
+        server_type = input("\033[38;5;205mEnter your choice Please: \033[0m")
+        if server_type == "1":
+            edit_l2tp_server_config1()
+            break
+        elif server_type == "2":
+            edit_l2tp_server_config2()
+            break
+        elif server_type == "3":
+            edit_l2tp_server_config3()
+            break
+        elif server_type == "4":
+            edit_l2tp_server_config4()
+            break
+        elif server_type == "5":
+            edit_l2tp_server_config5()
+            break
+        elif server_type == "q":
+            editlocal_l2tp_menu()
+        else:
+            print("Invalid choice.")
+
+CONFIG_FILE_SERVER1 = "/usr/local/bin/l2tp_server1.sh"
+CONFIG_FILE_SERVER2 = "/usr/local/bin/l2tp_server2.sh"
+CONFIG_FILE_SERVER3 = "/usr/local/bin/l2tp_server3.sh"
+CONFIG_FILE_SERVER4 = "/usr/local/bin/l2tp_server4.sh"
+CONFIG_FILE_SERVER5 = "/usr/local/bin/l2tp_server5.sh"
+KEEPALIVE_SCRIPT_PATH = "/usr/local/bin/l2tp_keepalive.sh"
+KEEPALIVE_SERVICE = "l2tp-keepalive.service"
+KEEPALIVE_SCRIPT_SERVER1_PATH = "/usr/local/bin/l2tp_keepalive1.sh"
+KEEPALIVE_SERVER1_SERVICE = "l2tp-keepalive1.service"
+KEEPALIVE_SCRIPT_SERVER2_PATH = "/usr/local/bin/l2tp_keepalive2.sh"
+KEEPALIVE_SERVER2_SERVICE = "l2tp-keepalive2.service"
+KEEPALIVE_SCRIPT_SERVER3_PATH = "/usr/local/bin/l2tp_keepalive3.sh"
+KEEPALIVE_SERVER3_SERVICE = "l2tp-keepalive3.service"
+KEEPALIVE_SCRIPT_SERVER4_PATH = "/usr/local/bin/l2tp_keepalive4.sh"
+KEEPALIVE_SERVER4_SERVICE = "l2tp-keepalive4.service"
+KEEPALIVE_SCRIPT_SERVER5_PATH = "/usr/local/bin/l2tp_keepalive5.sh"
+KEEPALIVE_SERVER5_SERVICE = "l2tp-keepalive5.service"
+
+def read_config(config_file):
+
+    values = {
+        "local_ip": "",
+        "remote_ip": "",
+        "udp_sport": "",
+        "udp_dport": "",
+        "private_ip": "",
+        "mtu": ""
+    }
+
+    with open(config_file, "r") as f:
+        for line in f:
+            if "ip l2tp add tunnel" in line and "encap udp" in line:
+                parts = line.split()
+                if "local" in parts:
+                    local_idx = parts.index("local") + 1
+                    values["local_ip"] = parts[local_idx]
+                if "remote" in parts:
+                    remote_idx = parts.index("remote") + 1
+                    values["remote_ip"] = parts[remote_idx]
+                if "udp_sport" in parts:
+                    sport_idx = parts.index("udp_sport") + 1
+                    values["udp_sport"] = parts[sport_idx]
+                if "udp_dport" in parts:
+                    dport_idx = parts.index("udp_dport") + 1
+                    values["udp_dport"] = parts[dport_idx]
+
+            if "ip addr add" in line and "dev" in line:
+                parts = line.split()
+                for part in parts:
+                    if "/" in part and part.count('.') == 3:  
+                        values["private_ip"] = part
+
+            if "ip link set" in line and "mtu" in line:
+                parts = line.split()
+                if "mtu" in parts:
+                    mtu_idx = parts.index("mtu") + 1
+                    values["mtu"] = parts[mtu_idx]
+
+    return values
+
+def write_config1(config_file, vals):
+    new_lines = []
+    with open(config_file, "r") as f:
+        lines = f.readlines()
+
+    for line in lines:
+        if "ip l2tp add tunnel" in line and "encap udp" in line:
+            new_line = (
+                f"sudo ip l2tp add tunnel tunnel_id 1 peer_tunnel_id 1 "
+                f"encap udp local {vals['local_ip']} remote {vals['remote_ip']} "
+                f"udp_sport {vals['udp_sport']} udp_dport {vals['udp_dport']}\n"
+            )
+            new_lines.append(new_line)
+            continue
+
+        if "ip addr add" in line and "dev" in line and "/24" in line:
+            parts = line.split()
+            device = parts[-1]  
+            new_line = f"sudo ip addr add {vals['private_ip']} dev {device}\n"
+            new_lines.append(new_line)
+            continue
+
+        if "ip link set" in line and "mtu" in line:
+            parts = line.split()
+            device_name = parts[4]  
+            new_line = f"sudo ip link set {device_name} mtu {vals['mtu']}\n"
+            new_lines.append(new_line)
+            continue
+
+        new_lines.append(line)
+
+    with open(config_file, "w") as f:
+        f.writelines(new_lines)
+
+#2
+def write_config2(config_file, vals):
+    new_lines = []
+    with open(config_file, "r") as f:
+        lines = f.readlines()
+
+    for line in lines:
+        if "ip l2tp add tunnel" in line and "encap udp" in line:
+            new_line = (
+                f"sudo ip l2tp add tunnel tunnel_id 2 peer_tunnel_id 2 "
+                f"encap udp local {vals['local_ip']} remote {vals['remote_ip']} "
+                f"udp_sport {vals['udp_sport']} udp_dport {vals['udp_dport']}\n"
+            )
+            new_lines.append(new_line)
+            continue
+
+        if "ip addr add" in line and "dev" in line and "/24" in line:
+            parts = line.split()
+            device = parts[-1]  
+            new_line = f"sudo ip addr add {vals['private_ip']} dev {device}\n"
+            new_lines.append(new_line)
+            continue
+
+        if "ip link set" in line and "mtu" in line:
+            parts = line.split()
+            device_name = parts[4]  
+            new_line = f"sudo ip link set {device_name} mtu {vals['mtu']}\n"
+            new_lines.append(new_line)
+            continue
+
+        new_lines.append(line)
+
+    with open(config_file, "w") as f:
+        f.writelines(new_lines)
+
+#3
+def write_config3(config_file, vals):
+    new_lines = []
+    with open(config_file, "r") as f:
+        lines = f.readlines()
+
+    for line in lines:
+        if "ip l2tp add tunnel" in line and "encap udp" in line:
+            new_line = (
+                f"sudo ip l2tp add tunnel tunnel_id 3 peer_tunnel_id 3 "
+                f"encap udp local {vals['local_ip']} remote {vals['remote_ip']} "
+                f"udp_sport {vals['udp_sport']} udp_dport {vals['udp_dport']}\n"
+            )
+            new_lines.append(new_line)
+            continue
+
+        if "ip addr add" in line and "dev" in line and "/24" in line:
+            parts = line.split()
+            device = parts[-1]  
+            new_line = f"sudo ip addr add {vals['private_ip']} dev {device}\n"
+            new_lines.append(new_line)
+            continue
+
+        if "ip link set" in line and "mtu" in line:
+            parts = line.split()
+            device_name = parts[4]  
+            new_line = f"sudo ip link set {device_name} mtu {vals['mtu']}\n"
+            new_lines.append(new_line)
+            continue
+
+        new_lines.append(line)
+
+    with open(config_file, "w") as f:
+        f.writelines(new_lines)
+
+#4
+def write_config4(config_file, vals):
+    new_lines = []
+    with open(config_file, "r") as f:
+        lines = f.readlines()
+
+    for line in lines:
+        if "ip l2tp add tunnel" in line and "encap udp" in line:
+            new_line = (
+                f"sudo ip l2tp add tunnel tunnel_id 4 peer_tunnel_id 4 "
+                f"encap udp local {vals['local_ip']} remote {vals['remote_ip']} "
+                f"udp_sport {vals['udp_sport']} udp_dport {vals['udp_dport']}\n"
+            )
+            new_lines.append(new_line)
+            continue
+
+        if "ip addr add" in line and "dev" in line and "/24" in line:
+            parts = line.split()
+            device = parts[-1]  
+            new_line = f"sudo ip addr add {vals['private_ip']} dev {device}\n"
+            new_lines.append(new_line)
+            continue
+
+        if "ip link set" in line and "mtu" in line:
+            parts = line.split()
+            device_name = parts[4]  
+            new_line = f"sudo ip link set {device_name} mtu {vals['mtu']}\n"
+            new_lines.append(new_line)
+            continue
+
+        new_lines.append(line)
+
+    with open(config_file, "w") as f:
+        f.writelines(new_lines)
+
+#5
+def write_config5(config_file, vals):
+    new_lines = []
+    with open(config_file, "r") as f:
+        lines = f.readlines()
+
+    for line in lines:
+        if "ip l2tp add tunnel" in line and "encap udp" in line:
+            new_line = (
+                f"sudo ip l2tp add tunnel tunnel_id 5 peer_tunnel_id 5 "
+                f"encap udp local {vals['local_ip']} remote {vals['remote_ip']} "
+                f"udp_sport {vals['udp_sport']} udp_dport {vals['udp_dport']}\n"
+            )
+            new_lines.append(new_line)
+            continue
+
+        if "ip addr add" in line and "dev" in line and "/24" in line:
+            parts = line.split()
+            device = parts[-1]  
+            new_line = f"sudo ip addr add {vals['private_ip']} dev {device}\n"
+            new_lines.append(new_line)
+            continue
+
+        if "ip link set" in line and "mtu" in line:
+            parts = line.split()
+            device_name = parts[4]  
+            new_line = f"sudo ip link set {device_name} mtu {vals['mtu']}\n"
+            new_lines.append(new_line)
+            continue
+
+        new_lines.append(line)
+
+    with open(config_file, "w") as f:
+        f.writelines(new_lines)
+
+#keepalive server config 1
+def get_keepalive_peer_ip_server1():
+    peer_ip = None
+    if os.path.exists(KEEPALIVE_SCRIPT_SERVER1_PATH):
+        with open(KEEPALIVE_SCRIPT_SERVER1_PATH, "r") as f:
+            for line in f:
+                if "ping -c 2" in line:
+                    peer_ip = line.split(" ")[-1].strip()
+                    break
+    return peer_ip 
+
+def update_keepalive_peer_ip_server1(new_peer_ip):
+    with open(KEEPALIVE_SCRIPT_SERVER1_PATH, "w") as f:
+        f.write(f"""#!/usr/bin/env bash
+
+while true
+do
+    ping -c 2 {new_peer_ip}
+    sleep 5
+done
+""")
+    os.chmod(KEEPALIVE_SCRIPT_SERVER1_PATH, 0o755)
+    os.system("systemctl restart l2tp-keepalive1.service")
+
+#keepalive server config 2
+def get_keepalive_peer_ip_server2():
+    peer_ip = None
+    if os.path.exists(KEEPALIVE_SCRIPT_SERVER2_PATH):
+        with open(KEEPALIVE_SCRIPT_SERVER2_PATH, "r") as f:
+            for line in f:
+                if "ping -c 2" in line:
+                    peer_ip = line.split(" ")[-1].strip()
+                    break
+    return peer_ip 
+
+def update_keepalive_peer_ip_server2(new_peer_ip):
+    with open(KEEPALIVE_SCRIPT_SERVER2_PATH, "w") as f:
+        f.write(f"""#!/usr/bin/env bash
+
+while true
+do
+    ping -c 2 {new_peer_ip}
+    sleep 5
+done
+""")
+    os.chmod(KEEPALIVE_SCRIPT_SERVER2_PATH, 0o755)
+    os.system("systemctl restart l2tp-keepalive2.service")
+
+#keepalive server config 3
+def get_keepalive_peer_ip_server3():
+    peer_ip = None
+    if os.path.exists(KEEPALIVE_SCRIPT_SERVER3_PATH):
+        with open(KEEPALIVE_SCRIPT_SERVER3_PATH, "r") as f:
+            for line in f:
+                if "ping -c 2" in line:
+                    peer_ip = line.split(" ")[-1].strip()
+                    break
+    return peer_ip 
+
+def update_keepalive_peer_ip_server3(new_peer_ip):
+    with open(KEEPALIVE_SCRIPT_SERVER3_PATH, "w") as f:
+        f.write(f"""#!/usr/bin/env bash
+
+while true
+do
+    ping -c 2 {new_peer_ip}
+    sleep 5
+done
+""")
+    os.chmod(KEEPALIVE_SCRIPT_SERVER3_PATH, 0o755)
+    os.system("systemctl restart l2tp-keepalive3.service")
+    
+#keepalive server config 4
+def get_keepalive_peer_ip_server4():
+    peer_ip = None
+    if os.path.exists(KEEPALIVE_SCRIPT_SERVER4_PATH):
+        with open(KEEPALIVE_SCRIPT_SERVER4_PATH, "r") as f:
+            for line in f:
+                if "ping -c 2" in line:
+                    peer_ip = line.split(" ")[-1].strip()
+                    break
+    return peer_ip 
+
+def update_keepalive_peer_ip_server4(new_peer_ip):
+    with open(KEEPALIVE_SCRIPT_SERVER4_PATH, "w") as f:
+        f.write(f"""#!/usr/bin/env bash
+
+while true
+do
+    ping -c 2 {new_peer_ip}
+    sleep 5
+done
+""")
+    os.chmod(KEEPALIVE_SCRIPT_SERVER4_PATH, 0o755)
+    os.system("systemctl restart l2tp-keepalive4.service")
+
+#keepalive server config 5
+def get_keepalive_peer_ip_server5():
+    peer_ip = None
+    if os.path.exists(KEEPALIVE_SCRIPT_SERVER5_PATH):
+        with open(KEEPALIVE_SCRIPT_SERVER5_PATH, "r") as f:
+            for line in f:
+                if "ping -c 2" in line:
+                    peer_ip = line.split(" ")[-1].strip()
+                    break
+    return peer_ip 
+
+def update_keepalive_peer_ip_server5(new_peer_ip):
+    with open(KEEPALIVE_SCRIPT_SERVER5_PATH, "w") as f:
+        f.write(f"""#!/usr/bin/env bash
+
+while true
+do
+    ping -c 2 {new_peer_ip}
+    sleep 5
+done
+""")
+    os.chmod(KEEPALIVE_SCRIPT_SERVER5_PATH, 0o755)
+    os.system("systemctl restart l2tp-keepalive5.service")
+
+#keepalive client
+def get_keepalive_peer_ip():
+    peer_ip = None
+    if os.path.exists(KEEPALIVE_SCRIPT_PATH):
+        with open(KEEPALIVE_SCRIPT_PATH, "r") as f:
+            for line in f:
+                if "ping -c 2" in line:
+                    peer_ip = line.split(" ")[-1].strip()
+                    break
+    return peer_ip 
+
+def update_keepalive_peer_ip(new_peer_ip):
+    with open(KEEPALIVE_SCRIPT_PATH, "w") as f:
+        f.write(f"""#!/usr/bin/env bash
+
+while true
+do
+    ping -c 2 {new_peer_ip}
+    sleep 5
+done
+""")
+    os.chmod(KEEPALIVE_SCRIPT_PATH, 0o755)
+    os.system("systemctl restart l2tp-keepalive.service")
+
+#notify 
+def display_checkmark(message):
+    print("\u2714 " + message)
+
+
+def display_error(message):
+    print("\u2718 Error: " + message)
+
+
+def display_notification(message):
+    print("\u2728 " + message)
+
+def edit_l2tp_server_config1():
+    if not os.geteuid() == 0:
+        print("WARNING: You may need to run this script as root (sudo) to edit and reload L2TP.")
+    
+    current_vals = read_config(CONFIG_FILE_SERVER1)
+    current_peer_ip = get_keepalive_peer_ip_server1()
+
+    while True:
+        os.system("clear")
+        print("\033[92m ^ ^\033[0m")
+        print("\033[92m(\033[91mO,O\033[92m)\033[0m")
+        print("\033[92m(   ) \033[92mL2TP Config [1] \033[93mEdit Menu\033[0m")
+        print(
+        '\033[92m "-"\033[93m═══════════════════════════════════════════════════\033[0m'
+        )
+        print("\033[93m╭───────────────────────────────────────╮\033[0m")
+        print("\n=== L2TP Server Configuration Menu ===")
+        print("1)\033[93m Local IP\033[97m        :", current_vals["local_ip"])
+        print("\033[0m2)\033[93m Remote IP [1]\033[97m       :", current_vals["remote_ip"])
+        print("\033[0m3)\033[92m UDP Source Port\033[97m :", current_vals["udp_sport"])
+        print("\033[0m4)\033[92m UDP Dest Port\033[97m   :", current_vals["udp_dport"])
+        print("\033[0m5)\033[93m Private IP\033[97m      :", current_vals["private_ip"])
+        print("\033[0m6)\033[93m MTU\033[97m             :", current_vals["mtu"])
+        print(f"7) \033[93mEdit Keepalive Peer IP\033[97m  : {current_peer_ip if current_peer_ip else 'Not Set'}")
+        print("\033[0m8)\033[92m Save & Apply Changes\033[0m")
+        print("9) Exit")
+        print("\033[93m╰───────────────────────────────────────╯\033[0m")
+
+        choice = input("Choose an option [1-9]: ").strip()
+
+        if choice == '1':
+            current_vals["local_ip"] = input("\033[93mEnter\033[92m new Local IP\033[93m:\033[0m ").strip()
+        elif choice == '2':
+            current_vals["remote_ip"] = input("\033[93mEnter\033[92m new Remote IP\033[93m:\033[0m ").strip()
+        elif choice == '3':
+            current_vals["udp_sport"] = input("\033[93mEnter \033[92mnew UDP\033[93m Source Port:\033[0m ").strip()
+        elif choice == '4':
+            current_vals["udp_dport"] = input("\033[93mEnter \033[92mnew UDP\033[93m Dest Port:\033[0m ").strip()
+        elif choice == '5':
+            current_vals["private_ip"] = input("\033[93mEnter \033[92mnew Private IP\033[93m (with /mask, e.g. 192.168.1.1/24):\033[0m ").strip()
+        elif choice == '6':
+            current_vals["mtu"] = input("\033[93mEnter \033[92mnew MTU\033[93m:\033[0m ").strip()
+        elif choice == '7':
+            if current_peer_ip:
+                print(f"\033[93mCurrent Keepalive Peer IP:\033[92m {current_peer_ip}\033[0m")
+            new_peer_ip = input("\033[93mEnter\033[92m new Peer IP\033[93m (or press Enter to keep current):\033[0m ").strip()
+            if new_peer_ip:
+                update_keepalive_peer_ip_server1(new_peer_ip)
+                print("\033[92mKeepalive Peer IP updated successfully!\033[0m")
+        elif choice == '8':
+            write_config1(CONFIG_FILE_SERVER1, current_vals)
+
+            display_notification("\033[93mRemoving existing L2TP session and tunnel...\033[0m")
+            remove_cmds = [
+                "sudo ip l2tp del session tunnel_id 1 session_id 1",
+                "sudo ip l2tp del tunnel tunnel_id 1"
+            ]
+            for cmd in remove_cmds:
+                try:
+                    subprocess.run(cmd.split(), check=True)
+                except subprocess.CalledProcessError as e:
+                    print("Warning: command might have failed or might not exist")
+
+            print(f"\033[94mRe-running Config file...\033[0m")
+            try:
+                subprocess.run(["/bin/bash", CONFIG_FILE_SERVER1], check=True)
+                display_checkmark("\033[92mNew L2TP configuration applied!\033[0m")
+            except subprocess.CalledProcessError as e:
+                print(f"Error running {CONFIG_FILE_SERVER1}: {e}")
+
+            return
+        elif choice == '9':
+            print("\033[93mNo changes made. exiting ..\033[0m")
+            return
+        else:
+            print("Invalid choice, please select a valid option.")
+
+def edit_l2tp_server_config2():
+    if not os.geteuid() == 0:
+        print("WARNING: You may need to run this script as root (sudo) to edit and reload L2TP.")
+    
+    current_vals = read_config(CONFIG_FILE_SERVER2)
+    current_peer_ip = get_keepalive_peer_ip_server2()
+
+    while True:
+        os.system("clear")
+        print("\033[92m ^ ^\033[0m")
+        print("\033[92m(\033[91mO,O\033[92m)\033[0m")
+        print("\033[92m(   ) \033[92mL2TP Config [2] \033[93mEdit Menu\033[0m")
+        print(
+        '\033[92m "-"\033[93m═══════════════════════════════════════════════════\033[0m'
+        )
+        print("\033[93m╭───────────────────────────────────────╮\033[0m")
+        print("\n=== L2TP Server Configuration Menu ===")
+        print("1)\033[93m Local IP\033[97m        :", current_vals["local_ip"])
+        print("\033[0m2)\033[93m Remote IP [2]\033[97m       :", current_vals["remote_ip"])
+        print("\033[0m3)\033[92m UDP Source Port\033[97m :", current_vals["udp_sport"])
+        print("\033[0m4)\033[92m UDP Dest Port\033[97m   :", current_vals["udp_dport"])
+        print("\033[0m5)\033[93m Private IP\033[97m      :", current_vals["private_ip"])
+        print("\033[0m6)\033[93m MTU\033[97m             :", current_vals["mtu"])
+        print(f"7) \033[93mEdit Keepalive Peer IP\033[97m  : {current_peer_ip if current_peer_ip else 'Not Set'}")
+        print("\033[0m8)\033[92m Save & Apply Changes\033[0m")
+        print("9) Exit")
+        print("\033[93m╰───────────────────────────────────────╯\033[0m")
+
+        choice = input("Choose an option [1-9]: ").strip()
+
+        if choice == '1':
+            current_vals["local_ip"] = input("\033[93mEnter\033[92m new Local IP\033[93m:\033[0m ").strip()
+        elif choice == '2':
+            current_vals["remote_ip"] = input("\033[93mEnter\033[92m new Remote IP\033[93m:\033[0m ").strip()
+        elif choice == '3':
+            current_vals["udp_sport"] = input("\033[93mEnter \033[92mnew UDP\033[93m Source Port:\033[0m ").strip()
+        elif choice == '4':
+            current_vals["udp_dport"] = input("\033[93mEnter \033[92mnew UDP\033[93m Dest Port:\033[0m ").strip()
+        elif choice == '5':
+            current_vals["private_ip"] = input("\033[93mEnter \033[92mnew Private IP\033[93m (with /mask, e.g. 192.168.2.1/24):\033[0m ").strip()
+        elif choice == '6':
+            current_vals["mtu"] = input("\033[93mEnter \033[92mnew MTU\033[93m:\033[0m ").strip()
+        elif choice == '7':
+            if current_peer_ip:
+                print(f"\033[93mCurrent Keepalive Peer IP:\033[92m {current_peer_ip}\033[0m")
+            new_peer_ip = input("\033[93mEnter\033[92m new Peer IP\033[93m (or press Enter to keep current):\033[0m ").strip()
+            if new_peer_ip:
+                update_keepalive_peer_ip_server2(new_peer_ip)
+                print("\033[92mKeepalive Peer IP updated successfully!\033[0m")
+        elif choice == '8':
+            write_config2(CONFIG_FILE_SERVER2, current_vals)
+
+            display_notification("\033[93mRemoving existing L2TP session and tunnel...\033[0m")
+            remove_cmds = [
+                "sudo ip l2tp del session tunnel_id 2 session_id 2",
+                "sudo ip l2tp del tunnel tunnel_id 2"
+            ]
+            for cmd in remove_cmds:
+                try:
+                    subprocess.run(cmd.split(), check=True)
+                except subprocess.CalledProcessError as e:
+                    print("Warning: command might have failed or might not exist")
+
+            print(f"\033[94mRe-running Config file...\033[0m")
+            try:
+                subprocess.run(["/bin/bash", CONFIG_FILE_SERVER2], check=True)
+                display_checkmark("\033[92mNew L2TP configuration applied!\033[0m")
+            except subprocess.CalledProcessError as e:
+                print(f"Error running {CONFIG_FILE_SERVER2}: {e}")
+
+            return
+        elif choice == '9':
+            print("\033[93mNo changes made. exiting ..\033[0m")
+            return
+        else:
+            print("Invalid choice, please select a valid option.")
+
+#3
+def edit_l2tp_server_config3():
+    if not os.geteuid() == 0:
+        print("WARNING: You may need to run this script as root (sudo) to edit and reload L2TP.")
+    
+    current_vals = read_config(CONFIG_FILE_SERVER3)
+    current_peer_ip = get_keepalive_peer_ip_server3()
+
+    while True:
+        os.system("clear")
+        print("\033[92m ^ ^\033[0m")
+        print("\033[92m(\033[91mO,O\033[92m)\033[0m")
+        print("\033[92m(   ) \033[92mL2TP Config [3] \033[93mEdit Menu\033[0m")
+        print(
+        '\033[92m "-"\033[93m═══════════════════════════════════════════════════\033[0m'
+        )
+        print("\033[93m╭───────────────────────────────────────╮\033[0m")
+        print("\n=== L2TP Server Configuration Menu ===")
+        print("1)\033[93m Local IP\033[97m        :", current_vals["local_ip"])
+        print("\033[0m2)\033[93m Remote IP [3]\033[97m       :", current_vals["remote_ip"])
+        print("\033[0m3)\033[92m UDP Source Port\033[97m :", current_vals["udp_sport"])
+        print("\033[0m4)\033[92m UDP Dest Port\033[97m   :", current_vals["udp_dport"])
+        print("\033[0m5)\033[93m Private IP\033[97m      :", current_vals["private_ip"])
+        print("\033[0m6)\033[93m MTU\033[97m             :", current_vals["mtu"])
+        print(f"7) \033[93mEdit Keepalive Peer IP\033[97m  : {current_peer_ip if current_peer_ip else 'Not Set'}")
+        print("\033[0m8)\033[92m Save & Apply Changes\033[0m")
+        print("9) Exit")
+        print("\033[93m╰───────────────────────────────────────╯\033[0m")
+
+        choice = input("Choose an option [1-8]: ").strip()
+
+        if choice == '1':
+            current_vals["local_ip"] = input("\033[93mEnter\033[92m new Local IP\033[93m:\033[0m ").strip()
+        elif choice == '2':
+            current_vals["remote_ip"] = input("\033[93mEnter\033[92m new Remote IP\033[93m:\033[0m ").strip()
+        elif choice == '3':
+            current_vals["udp_sport"] = input("\033[93mEnter \033[92mnew UDP\033[93m Source Port:\033[0m ").strip()
+        elif choice == '4':
+            current_vals["udp_dport"] = input("\033[93mEnter \033[92mnew UDP\033[93m Dest Port:\033[0m ").strip()
+        elif choice == '5':
+            current_vals["private_ip"] = input("\033[93mEnter \033[92mnew Private IP\033[93m (with /mask, e.g. 192.168.3.1/24):\033[0m ").strip()
+        elif choice == '6':
+            current_vals["mtu"] = input("\033[93mEnter \033[92mnew MTU\033[93m:\033[0m ").strip()
+        elif choice == '7':
+            if current_peer_ip:
+                print(f"\033[93mCurrent Keepalive Peer IP:\033[92m {current_peer_ip}\033[0m")
+            new_peer_ip = input("\033[93mEnter\033[92m new Peer IP\033[93m (or press Enter to keep current):\033[0m ").strip()
+            if new_peer_ip:
+                update_keepalive_peer_ip_server3(new_peer_ip)
+                print("\033[92mKeepalive Peer IP updated successfully!\033[0m")
+        elif choice == '8':
+            write_config3(CONFIG_FILE_SERVER3, current_vals)
+
+            display_notification("\033[93mRemoving existing L2TP session and tunnel...\033[0m")
+            remove_cmds = [
+                "sudo ip l2tp del session tunnel_id 3 session_id 3",
+                "sudo ip l2tp del tunnel tunnel_id 3"
+            ]
+            for cmd in remove_cmds:
+                try:
+                    subprocess.run(cmd.split(), check=True)
+                except subprocess.CalledProcessError as e:
+                    print("Warning: command might have failed or might not exist")
+
+            print(f"\033[94mRe-running Config file...\033[0m")
+            try:
+                subprocess.run(["/bin/bash", CONFIG_FILE_SERVER3], check=True)
+                display_checkmark("\033[92mNew L2TP configuration applied!\033[0m")
+            except subprocess.CalledProcessError as e:
+                print(f"Error running {CONFIG_FILE_SERVER3}: {e}")
+
+            return
+        elif choice == '9':
+            print("\033[93mNo changes made. exiting ..\033[0m")
+            return
+        else:
+            print("Invalid choice, please select a valid option.")
+
+#4
+def edit_l2tp_server_config4():
+    if not os.geteuid() == 0:
+        print("WARNING: You may need to run this script as root (sudo) to edit and reload L2TP.")
+    
+    current_vals = read_config(CONFIG_FILE_SERVER4)
+    current_peer_ip = get_keepalive_peer_ip_server4()
+
+    while True:
+        os.system("clear")
+        print("\033[92m ^ ^\033[0m")
+        print("\033[92m(\033[91mO,O\033[92m)\033[0m")
+        print("\033[92m(   ) \033[92mL2TP Config [4] \033[93mEdit Menu\033[0m")
+        print(
+        '\033[92m "-"\033[93m═══════════════════════════════════════════════════\033[0m'
+        )
+        print("\033[93m╭───────────────────────────────────────╮\033[0m")
+        print("\n=== L2TP Server Configuration Menu ===")
+        print("1)\033[93m Local IP\033[97m        :", current_vals["local_ip"])
+        print("\033[0m2)\033[93m Remote IP [4]\033[97m       :", current_vals["remote_ip"])
+        print("\033[0m3)\033[92m UDP Source Port\033[97m :", current_vals["udp_sport"])
+        print("\033[0m4)\033[92m UDP Dest Port\033[97m   :", current_vals["udp_dport"])
+        print("\033[0m5)\033[93m Private IP\033[97m      :", current_vals["private_ip"])
+        print("\033[0m6)\033[93m MTU\033[97m             :", current_vals["mtu"])
+        print(f"7) \033[93mEdit Keepalive Peer IP\033[97m  : {current_peer_ip if current_peer_ip else 'Not Set'}")
+        print("\033[0m8)\033[92m Save & Apply Changes\033[0m")
+        print("9) Exit")
+        print("\033[93m╰───────────────────────────────────────╯\033[0m")
+
+        choice = input("Choose an option [1-8]: ").strip()
+
+        if choice == '1':
+            current_vals["local_ip"] = input("\033[93mEnter\033[92m new Local IP\033[93m:\033[0m ").strip()
+        elif choice == '2':
+            current_vals["remote_ip"] = input("\033[93mEnter\033[92m new Remote IP\033[93m:\033[0m ").strip()
+        elif choice == '3':
+            current_vals["udp_sport"] = input("\033[93mEnter \033[92mnew UDP\033[93m Source Port:\033[0m ").strip()
+        elif choice == '4':
+            current_vals["udp_dport"] = input("\033[93mEnter \033[92mnew UDP\033[93m Dest Port:\033[0m ").strip()
+        elif choice == '5':
+            current_vals["private_ip"] = input("\033[93mEnter \033[92mnew Private IP\033[93m (with /mask, e.g. 192.168.4.1/24):\033[0m ").strip()
+        elif choice == '6':
+            current_vals["mtu"] = input("\033[93mEnter \033[92mnew MTU\033[93m:\033[0m ").strip()
+        elif choice == '7':
+            if current_peer_ip:
+                print(f"\033[93mCurrent Keepalive Peer IP:\033[92m {current_peer_ip}\033[0m")
+            new_peer_ip = input("\033[93mEnter\033[92m new Peer IP\033[93m (or press Enter to keep current):\033[0m ").strip()
+            if new_peer_ip:
+                update_keepalive_peer_ip_server4(new_peer_ip)
+                print("\033[92mKeepalive Peer IP updated successfully!\033[0m")
+        elif choice == '8':
+            write_config4(CONFIG_FILE_SERVER4, current_vals)
+
+            display_notification("\033[93mRemoving existing L2TP session and tunnel...\033[0m")
+            remove_cmds = [
+                "sudo ip l2tp del session tunnel_id 4 session_id 4",
+                "sudo ip l2tp del tunnel tunnel_id 4"
+            ]
+            for cmd in remove_cmds:
+                try:
+                    subprocess.run(cmd.split(), check=True)
+                except subprocess.CalledProcessError as e:
+                    print("Warning: command might have failed or might not exist")
+
+            print("\033[94mRe-running Config file...\033[0m")
+            try:
+                subprocess.run(["/bin/bash", CONFIG_FILE_SERVER4], check=True)
+                display_checkmark("\033[92mNew L2TP configuration applied!\033[0m")
+            except subprocess.CalledProcessError as e:
+                print(f"Error running {CONFIG_FILE_SERVER4}: {e}")
+
+            return
+        elif choice == '9':
+            print("\033[93mNo changes made. exiting ..\033[0m")
+            return
+        else:
+            print("Invalid choice, please select a valid option.")
+#5
+def edit_l2tp_server_config5():
+    if not os.geteuid() == 0:
+        print("WARNING: You may need to run this script as root (sudo) to edit and reload L2TP.")
+    
+    current_vals = read_config(CONFIG_FILE_SERVER5)
+    current_peer_ip = get_keepalive_peer_ip_server5()
+
+    while True:
+        os.system("clear")
+        print("\033[92m ^ ^\033[0m")
+        print("\033[92m(\033[91mO,O\033[92m)\033[0m")
+        print("\033[92m(   ) \033[92mL2TP Config [5] \033[93mEdit Menu\033[0m")
+        print(
+        '\033[92m "-"\033[93m═══════════════════════════════════════════════════\033[0m'
+        )
+        print("\033[93m╭───────────────────────────────────────╮\033[0m")
+        print("\n=== L2TP Server Configuration Menu ===")
+        print("1)\033[93m Local IP\033[97m        :", current_vals["local_ip"])
+        print("\033[0m2)\033[93m Remote IP [5]\033[97m       :", current_vals["remote_ip"])
+        print("\033[0m3)\033[92m UDP Source Port\033[97m :", current_vals["udp_sport"])
+        print("\033[0m4)\033[92m UDP Dest Port\033[97m   :", current_vals["udp_dport"])
+        print("\033[0m5)\033[93m Private IP\033[97m      :", current_vals["private_ip"])
+        print("\033[0m6)\033[93m MTU\033[97m             :", current_vals["mtu"])
+        print(f"7) \033[93mEdit Keepalive Peer IP\033[97m  : {current_peer_ip if current_peer_ip else 'Not Set'}")
+        print("\033[0m8)\033[92m Save & Apply Changes\033[0m")
+        print("9) Exit")
+        print("\033[93m╰───────────────────────────────────────╯\033[0m")
+
+        choice = input("Choose an option [1-9]: ").strip()
+
+        if choice == '1':
+            current_vals["local_ip"] = input("\033[93mEnter\033[92m new Local IP\033[93m:\033[0m ").strip()
+        elif choice == '2':
+            current_vals["remote_ip"] = input("\033[93mEnter\033[92m new Remote IP\033[93m:\033[0m ").strip()
+        elif choice == '3':
+            current_vals["udp_sport"] = input("\033[93mEnter \033[92mnew UDP\033[93m Source Port:\033[0m ").strip()
+        elif choice == '4':
+            current_vals["udp_dport"] = input("\033[93mEnter \033[92mnew UDP\033[93m Dest Port:\033[0m ").strip()
+        elif choice == '5':
+            current_vals["private_ip"] = input("\033[93mEnter \033[92mnew Private IP\033[93m (with /mask, e.g. 192.168.5.1/24):\033[0m ").strip()
+        elif choice == '6':
+            current_vals["mtu"] = input("\033[93mEnter \033[92mnew MTU\033[93m:\033[0m ").strip()
+        elif choice == '7':
+            if current_peer_ip:
+                print(f"\033[93mCurrent Keepalive Peer IP:\033[92m {current_peer_ip}\033[0m")
+            new_peer_ip = input("\033[93mEnter\033[92m new Peer IP\033[93m (or press Enter to keep current):\033[0m ").strip()
+            if new_peer_ip:
+                update_keepalive_peer_ip_server5(new_peer_ip)
+                print("\033[92mKeepalive Peer IP updated successfully!\033[0m")
+        elif choice == '8':
+            write_config5(CONFIG_FILE_SERVER5, current_vals)
+
+            display_notification("\033[93mRemoving existing L2TP session and tunnel...\033[0m")
+            remove_cmds = [
+                "sudo ip l2tp del session tunnel_id 5 session_id 5",
+                "sudo ip l2tp del tunnel tunnel_id 5"
+            ]
+            for cmd in remove_cmds:
+                try:
+                    subprocess.run(cmd.split(), check=True)
+                except subprocess.CalledProcessError as e:
+                    print("Warning: command might have failed or might not exist")
+
+            print(f"\033[94mRe-running Config file...\033[0m")
+            try:
+                subprocess.run(["/bin/bash", CONFIG_FILE_SERVER5], check=True)
+                display_checkmark("\033[92mNew L2TP configuration applied!\033[0m")
+            except subprocess.CalledProcessError as e:
+                print(f"Error running {CONFIG_FILE_SERVER5}: {e}")
+
+            return
+        elif choice == '9':
+            print("\033[93mNo changes made. exiting ..\033[0m")
+            return
+        else:
+            print("Invalid choice, please select a valid option.")
+
+
+def edit_l2tp_clients():
+    os.system("clear")
+    print("\033[92m ^ ^\033[0m")
+    print("\033[92m(\033[91mO,O\033[92m)\033[0m")
+    print("\033[92m(   ) \033[92mL2TP Edit \033[93mClient Menu\033[0m")
+    print(
+        '\033[92m "-"\033[93m═══════════════════════════════════════════════════\033[0m'
+    )
+    print("\033[93m╭───────────────────────────────────────╮\033[0m")
+    print("\033[93mChoose what to do:\033[0m")
+    print("1. \033[93mClient [1]\033[0m")
+    print("2. \033[93mClient [2]\033[0m")
+    print("3. \033[92mClient [3]\033[0m")
+    print("4. \033[93mClient [4]\033[0m")
+    print("5. \033[93mClient [5]\033[0m")
+    print("q.\033[97mback to previous menu\033[0m")
+    print("\033[93m╰───────────────────────────────────────╯\033[0m")
+    while True:
+        server_type = input("\033[38;5;205mEnter your choice Please: \033[0m")
+        if server_type == "1":
+            edit_l2tp_client_config1()
+            break
+        elif server_type == "2":
+            edit_l2tp_client_config2()
+            break
+        elif server_type == "3":
+            edit_l2tp_client_config3()
+            break
+        elif server_type == "4":
+            edit_l2tp_client_config4()
+            break
+        elif server_type == "5":
+            edit_l2tp_client_config5()
+            break
+        elif server_type == "q":
+            editlocal_l2tp_menu()
+        else:
+            print("Invalid choice.")
+
+CONFIG_FILE_Client1 = "/usr/local/bin/l2tp_client1.sh"
+CONFIG_FILE_Client2 = "/usr/local/bin/l2tp_client2.sh"
+CONFIG_FILE_Client3 = "/usr/local/bin/l2tp_client3.sh"
+CONFIG_FILE_Client4 = "/usr/local/bin/l2tp_client4.sh"
+CONFIG_FILE_Client5 = "/usr/local/bin/l2tp_client5.sh"
+
+def read_config(config_file):
+
+    values = {
+        "local_ip": "",
+        "remote_ip": "",
+        "udp_sport": "",
+        "udp_dport": "",
+        "private_ip": "",
+        "mtu": ""
+    }
+
+    with open(config_file, "r") as f:
+        for line in f:
+            if "ip l2tp add tunnel" in line and "encap udp" in line:
+                parts = line.split()
+                if "local" in parts:
+                    local_idx = parts.index("local") + 1
+                    values["local_ip"] = parts[local_idx]
+                if "remote" in parts:
+                    remote_idx = parts.index("remote") + 1
+                    values["remote_ip"] = parts[remote_idx]
+                if "udp_sport" in parts:
+                    sport_idx = parts.index("udp_sport") + 1
+                    values["udp_sport"] = parts[sport_idx]
+                if "udp_dport" in parts:
+                    dport_idx = parts.index("udp_dport") + 1
+                    values["udp_dport"] = parts[dport_idx]
+
+            if "ip addr add" in line and "dev" in line:
+                parts = line.split()
+                for part in parts:
+                    if "/" in part and part.count('.') == 3:  
+                        values["private_ip"] = part
+
+            if "ip link set" in line and "mtu" in line:
+                parts = line.split()
+                if "mtu" in parts:
+                    mtu_idx = parts.index("mtu") + 1
+                    values["mtu"] = parts[mtu_idx]
+
+    return values
+
+def write_config1(config_file, vals):
+
+    new_lines = []
+    with open(config_file, "r") as f:
+        lines = f.readlines()
+
+    for line in lines:
+        if "ip l2tp add tunnel" in line and "encap udp" in line:
+            new_line = (
+                f"sudo ip l2tp add tunnel tunnel_id 1 peer_tunnel_id 1 "
+                f"encap udp local {vals['local_ip']} remote {vals['remote_ip']} "
+                f"udp_sport {vals['udp_sport']} udp_dport {vals['udp_dport']}\n"
+            )
+            new_lines.append(new_line)
+            continue
+
+        if "ip addr add" in line and "dev" in line and "/24" in line:
+            parts = line.split()
+            device = parts[-1] 
+            new_line = f"sudo ip addr add {vals['private_ip']} dev {device}\n"
+            new_lines.append(new_line)
+            continue
+
+        if "ip link set" in line and "mtu" in line:
+            parts = line.split()
+            device_name = parts[4]
+            new_line = f"sudo ip link set {device_name} mtu {vals['mtu']}\n"
+            new_lines.append(new_line)
+            continue
+
+        new_lines.append(line)
+
+    with open(config_file, "w") as f:
+        f.writelines(new_lines)
+
+def write_config2(config_file, vals):
+
+    new_lines = []
+    with open(config_file, "r") as f:
+        lines = f.readlines()
+
+    for line in lines:
+        if "ip l2tp add tunnel" in line and "encap udp" in line:
+            new_line = (
+                f"sudo ip l2tp add tunnel tunnel_id 2 peer_tunnel_id 2 "
+                f"encap udp local {vals['local_ip']} remote {vals['remote_ip']} "
+                f"udp_sport {vals['udp_sport']} udp_dport {vals['udp_dport']}\n"
+            )
+            new_lines.append(new_line)
+            continue
+
+        if "ip addr add" in line and "dev" in line and "/24" in line:
+            parts = line.split()
+            device = parts[-1] 
+            new_line = f"sudo ip addr add {vals['private_ip']} dev {device}\n"
+            new_lines.append(new_line)
+            continue
+
+        if "ip link set" in line and "mtu" in line:
+            parts = line.split()
+            device_name = parts[4]
+            new_line = f"sudo ip link set {device_name} mtu {vals['mtu']}\n"
+            new_lines.append(new_line)
+            continue
+
+        new_lines.append(line)
+
+    with open(config_file, "w") as f:
+        f.writelines(new_lines)
+
+def write_config3(config_file, vals):
+
+    new_lines = []
+    with open(config_file, "r") as f:
+        lines = f.readlines()
+
+    for line in lines:
+        if "ip l2tp add tunnel" in line and "encap udp" in line:
+            new_line = (
+                f"sudo ip l2tp add tunnel tunnel_id 3 peer_tunnel_id 3 "
+                f"encap udp local {vals['local_ip']} remote {vals['remote_ip']} "
+                f"udp_sport {vals['udp_sport']} udp_dport {vals['udp_dport']}\n"
+            )
+            new_lines.append(new_line)
+            continue
+
+        if "ip addr add" in line and "dev" in line and "/24" in line:
+            parts = line.split()
+            device = parts[-1] 
+            new_line = f"sudo ip addr add {vals['private_ip']} dev {device}\n"
+            new_lines.append(new_line)
+            continue
+
+        if "ip link set" in line and "mtu" in line:
+            parts = line.split()
+            device_name = parts[4]
+            new_line = f"sudo ip link set {device_name} mtu {vals['mtu']}\n"
+            new_lines.append(new_line)
+            continue
+
+        new_lines.append(line)
+
+    with open(config_file, "w") as f:
+        f.writelines(new_lines)
+
+def write_config4(config_file, vals):
+
+    new_lines = []
+    with open(config_file, "r") as f:
+        lines = f.readlines()
+
+    for line in lines:
+        if "ip l2tp add tunnel" in line and "encap udp" in line:
+            new_line = (
+                f"sudo ip l2tp add tunnel tunnel_id 4 peer_tunnel_id 4 "
+                f"encap udp local {vals['local_ip']} remote {vals['remote_ip']} "
+                f"udp_sport {vals['udp_sport']} udp_dport {vals['udp_dport']}\n"
+            )
+            new_lines.append(new_line)
+            continue
+
+        if "ip addr add" in line and "dev" in line and "/24" in line:
+            parts = line.split()
+            device = parts[-1] 
+            new_line = f"sudo ip addr add {vals['private_ip']} dev {device}\n"
+            new_lines.append(new_line)
+            continue
+
+        if "ip link set" in line and "mtu" in line:
+            parts = line.split()
+            device_name = parts[4]
+            new_line = f"sudo ip link set {device_name} mtu {vals['mtu']}\n"
+            new_lines.append(new_line)
+            continue
+
+        new_lines.append(line)
+
+    with open(config_file, "w") as f:
+        f.writelines(new_lines)
+
+def write_config5(config_file, vals):
+
+    new_lines = []
+    with open(config_file, "r") as f:
+        lines = f.readlines()
+
+    for line in lines:
+        if "ip l2tp add tunnel" in line and "encap udp" in line:
+            new_line = (
+                f"sudo ip l2tp add tunnel tunnel_id 5 peer_tunnel_id 5 "
+                f"encap udp local {vals['local_ip']} remote {vals['remote_ip']} "
+                f"udp_sport {vals['udp_sport']} udp_dport {vals['udp_dport']}\n"
+            )
+            new_lines.append(new_line)
+            continue
+
+        if "ip addr add" in line and "dev" in line and "/24" in line:
+            parts = line.split()
+            device = parts[-1] 
+            new_line = f"sudo ip addr add {vals['private_ip']} dev {device}\n"
+            new_lines.append(new_line)
+            continue
+
+        if "ip link set" in line and "mtu" in line:
+            parts = line.split()
+            device_name = parts[4]
+            new_line = f"sudo ip link set {device_name} mtu {vals['mtu']}\n"
+            new_lines.append(new_line)
+            continue
+
+        new_lines.append(line)
+
+    with open(config_file, "w") as f:
+        f.writelines(new_lines)
+
+def edit_l2tp_client_config1():
+    if not os.geteuid() == 0:
+        print("WARNING: You may need to run this script as root (sudo) to edit and reload L2TP.")
+    
+    current_vals = read_config(CONFIG_FILE_Client1)
+    current_peer_ip = get_keepalive_peer_ip()
+
+    while True:
+        os.system("clear")
+        print("\033[92m ^ ^\033[0m")
+        print("\033[92m(\033[91mO,O\033[92m)\033[0m")
+        print("\033[92m(   ) \033[92mL2TP Client [1] \033[93mEdit Menu\033[0m")
+        print(
+        '\033[92m "-"\033[93m═══════════════════════════════════════════════════\033[0m'
+        )
+        print("\033[93m╭───────────────────────────────────────╮\033[0m")
+        print("\n=== L2TP Configuration Menu ===")
+        print("1)\033[93m Local IP [1]\033[97m        :", current_vals["local_ip"])
+        print("\033[0m2)\033[93m Remote IP\033[97m       :", current_vals["remote_ip"])
+        print("\033[0m3)\033[92m UDP Source Port\033[97m :", current_vals["udp_sport"])
+        print("\033[0m4)\033[92m UDP Dest Port\033[97m   :", current_vals["udp_dport"])
+        print("\033[0m5)\033[93m Private IP\033[97m      :", current_vals["private_ip"])
+        print("\033[0m6)\033[93m MTU\033[97m             :", current_vals["mtu"])
+        print(f"7) \033[93mEdit Keepalive Peer IP\033[97m  : {current_peer_ip if current_peer_ip else 'Not Set'}")
+        print("\033[0m8)\033[92m Save & Apply Changes\033[0m")
+        print("9) Exit")
+        print("\033[93m╰───────────────────────────────────────╯\033[0m")
+
+        choice = input("Choose an option [1-9]: ").strip()
+
+        if choice == '1':
+            current_vals["local_ip"] = input("\033[93mEnter \033[92mnew Local IP\033[93m:\033[0m ").strip()
+        elif choice == '2':
+            current_vals["remote_ip"] = input("\033[93mEnter\033[92m new Remote IP\033[93m:\033[0m ").strip()
+        elif choice == '3':
+            current_vals["udp_sport"] = input("\033[93mEnter\033[92m new UDP Source Port\033[93m:\033[0m ").strip()
+        elif choice == '4':
+            current_vals["udp_dport"] = input("\033[93mEnter\033[92m new UDP Dest Port\033[93m:\033[0m ").strip()
+        elif choice == '5':
+            current_vals["private_ip"] = input("\033[93mEnter\033[92m new Private IP (with /mask, e.g. 192.168.1.2/24)\033[93m:\033[0m ").strip()
+        elif choice == '6':
+            current_vals["mtu"] = input("\033[93mEnter\033[92m new MTU\033[93m:\033[0m ").strip()
+        elif choice == '7':
+            if current_peer_ip:
+                print(f"\033[93mCurrent Keepalive Peer IP:\033[92m {current_peer_ip}\033[0m")
+            new_peer_ip = input("\033[93mEnter\033[92m new Peer IP\033[93m (or press Enter to keep current):\033[0m ").strip()
+            if new_peer_ip:
+                update_keepalive_peer_ip(new_peer_ip)
+                print("\033[92mKeepalive Peer IP updated successfully!\033[0m")
+        elif choice == '8':
+            write_config1(CONFIG_FILE_Client1, current_vals)
+
+            display_notification("\033[93mRemoving existing L2TP session and tunnel...\033[0m")
+            remove_cmds = [
+                "sudo ip l2tp del session tunnel_id 1 session_id 1",
+                "sudo ip l2tp del tunnel tunnel_id 1"
+            ]
+            for cmd in remove_cmds:
+                try:
+                    subprocess.run(cmd.split(), check=True)
+                except subprocess.CalledProcessError as e:
+                    print("Warning: command might have failed or might not exist")
+
+            print("\033[94mRe-running Config file...\033[0m")
+            try:
+                subprocess.run(["/bin/bash", CONFIG_FILE_Client1], check=True)
+                display_checkmark("\033[92mNew L2TP configuration applied!\033[0m")
+            except subprocess.CalledProcessError as e:
+                print(f"Error running {CONFIG_FILE_Client1}: {e}")
+
+            return
+        elif choice == '9':
+            print("\033[93mNo changes made. exiting ..\033[0m")
+            return
+        else:
+            print("Invalid choice, please select a valid option.")
+
+#2
+def edit_l2tp_client_config2():
+    if not os.geteuid() == 0:
+        print("WARNING: You may need to run this script as root (sudo) to edit and reload L2TP.")
+    
+    current_vals = read_config(CONFIG_FILE_Client2)
+    current_peer_ip = get_keepalive_peer_ip()
+
+    while True:
+        os.system("clear")
+        print("\033[92m ^ ^\033[0m")
+        print("\033[92m(\033[91mO,O\033[92m)\033[0m")
+        print("\033[92m(   ) \033[92mL2TP Client [2] \033[93mEdit Menu\033[0m")
+        print(
+        '\033[92m "-"\033[93m═══════════════════════════════════════════════════\033[0m'
+        )
+        print("\033[93m╭───────────────────────────────────────╮\033[0m")
+        print("\n=== L2TP Configuration Menu ===")
+        print("1)\033[93m Local IP [2]\033[97m        :", current_vals["local_ip"])
+        print("\033[0m2)\033[93m Remote IP\033[97m       :", current_vals["remote_ip"])
+        print("\033[0m3)\033[92m UDP Source Port\033[97m :", current_vals["udp_sport"])
+        print("\033[0m4)\033[92m UDP Dest Port\033[97m   :", current_vals["udp_dport"])
+        print("\033[0m5)\033[93m Private IP\033[97m      :", current_vals["private_ip"])
+        print("\033[0m6)\033[93m MTU\033[97m             :", current_vals["mtu"])
+        print(f"7) \033[93mEdit Keepalive Peer IP\033[97m  : {current_peer_ip if current_peer_ip else 'Not Set'}")
+        print("\033[0m8)\033[92m Save & Apply Changes\033[0m")
+        print("9) Exit")
+        print("\033[93m╰───────────────────────────────────────╯\033[0m")
+
+        choice = input("Choose an option [1-9]: ").strip()
+
+        if choice == '1':
+            current_vals["local_ip"] = input("\033[93mEnter \033[92mnew Local IP\033[93m:\033[0m ").strip()
+        elif choice == '2':
+            current_vals["remote_ip"] = input("\033[93mEnter\033[92m new Remote IP\033[93m:\033[0m ").strip()
+        elif choice == '3':
+            current_vals["udp_sport"] = input("\033[93mEnter\033[92m new UDP Source Port\033[93m:\033[0m ").strip()
+        elif choice == '4':
+            current_vals["udp_dport"] = input("\033[93mEnter\033[92m new UDP Dest Port\033[93m:\033[0m ").strip()
+        elif choice == '5':
+            current_vals["private_ip"] = input("\033[93mEnter\033[92m new Private IP (with /mask, e.g. 192.168.2.2/24)\033[93m:\033[0m ").strip()
+        elif choice == '6':
+            current_vals["mtu"] = input("\033[93mEnter\033[92m new MTU\033[93m:\033[0m ").strip()
+        elif choice == '7':
+            if current_peer_ip:
+                print(f"\033[93mCurrent Keepalive Peer IP:\033[92m {current_peer_ip}\033[0m")
+            new_peer_ip = input("\033[93mEnter\033[92m new Peer IP\033[93m (or press Enter to keep current):\033[0m ").strip()
+            if new_peer_ip:
+                update_keepalive_peer_ip(new_peer_ip)
+                print("\033[92mKeepalive Peer IP updated successfully!\033[0m")
+        elif choice == '8':
+            write_config2(CONFIG_FILE_Client2, current_vals)
+
+            display_notification("\033[93mRemoving existing L2TP session and tunnel...\033[0m")
+            remove_cmds = [
+                "sudo ip l2tp del session tunnel_id 2 session_id 2",
+                "sudo ip l2tp del tunnel tunnel_id 2"
+            ]
+            for cmd in remove_cmds:
+                try:
+                    subprocess.run(cmd.split(), check=True)
+                except subprocess.CalledProcessError as e:
+                    print("Warning: command might have failed or might not exist")
+
+            print("\033[94mRe-running Config file...\033[0m")
+            try:
+                subprocess.run(["/bin/bash", CONFIG_FILE_Client1], check=True)
+                display_checkmark("\033[92mNew L2TP configuration applied!\033[0m")
+            except subprocess.CalledProcessError as e:
+                print(f"Error running {CONFIG_FILE_Client1}: {e}")
+
+            return
+        elif choice == '9':
+            print("\033[93mNo changes made. exiting ..\033[0m")
+            return
+        else:
+            print("Invalid choice, please select a valid option.")
+
+#3
+def edit_l2tp_client_config3():
+    if not os.geteuid() == 0:
+        print("WARNING: You may need to run this script as root (sudo) to edit and reload L2TP.")
+    
+    current_vals = read_config(CONFIG_FILE_Client3)
+    current_peer_ip = get_keepalive_peer_ip()
+
+    while True:
+        os.system("clear")
+        print("\033[92m ^ ^\033[0m")
+        print("\033[92m(\033[91mO,O\033[92m)\033[0m")
+        print("\033[92m(   ) \033[92mL2TP Client [3] \033[93mEdit Menu\033[0m")
+        print(
+        '\033[92m "-"\033[93m═══════════════════════════════════════════════════\033[0m'
+        )
+        print("\033[93m╭───────────────────────────────────────╮\033[0m")
+        print("\n=== L2TP Configuration Menu ===")
+        print("1)\033[93m Local IP [3]\033[97m        :", current_vals["local_ip"])
+        print("\033[0m2)\033[93m Remote IP\033[97m       :", current_vals["remote_ip"])
+        print("\033[0m3)\033[92m UDP Source Port\033[97m :", current_vals["udp_sport"])
+        print("\033[0m4)\033[92m UDP Dest Port\033[97m   :", current_vals["udp_dport"])
+        print("\033[0m5)\033[93m Private IP\033[97m      :", current_vals["private_ip"])
+        print("\033[0m6)\033[93m MTU\033[97m             :", current_vals["mtu"])
+        print(f"7) \033[93mEdit Keepalive Peer IP\033[97m  : {current_peer_ip if current_peer_ip else 'Not Set'}")
+        print("\033[0m8)\033[92m Save & Apply Changes\033[0m")
+        print("9) Exit")
+        print("\033[93m╰───────────────────────────────────────╯\033[0m")
+
+        choice = input("Choose an option [1-9]: ").strip()
+
+        if choice == '1':
+            current_vals["local_ip"] = input("\033[93mEnter \033[92mnew Local IP\033[93m:\033[0m ").strip()
+        elif choice == '2':
+            current_vals["remote_ip"] = input("\033[93mEnter\033[92m new Remote IP\033[93m:\033[0m ").strip()
+        elif choice == '3':
+            current_vals["udp_sport"] = input("\033[93mEnter\033[92m new UDP Source Port\033[93m:\033[0m ").strip()
+        elif choice == '4':
+            current_vals["udp_dport"] = input("\033[93mEnter\033[92m new UDP Dest Port\033[93m:\033[0m ").strip()
+        elif choice == '5':
+            current_vals["private_ip"] = input("\033[93mEnter\033[92m new Private IP (with /mask, e.g. 192.168.3.2/24)\033[93m:\033[0m ").strip()
+        elif choice == '6':
+            current_vals["mtu"] = input("\033[93mEnter\033[92m new MTU\033[93m:\033[0m ").strip()
+        elif choice == '7':
+            if current_peer_ip:
+                print(f"\033[93mCurrent Keepalive Peer IP:\033[92m {current_peer_ip}\033[0m")
+            new_peer_ip = input("\033[93mEnter\033[92m new Peer IP\033[93m (or press Enter to keep current):\033[0m ").strip()
+            if new_peer_ip:
+                update_keepalive_peer_ip(new_peer_ip)
+                print("\033[92mKeepalive Peer IP updated successfully!\033[0m")
+        elif choice == '8':
+            write_config3(CONFIG_FILE_Client3, current_vals)
+
+            display_notification("\033[93mRemoving existing L2TP session and tunnel...\033[0m")
+            remove_cmds = [
+                "sudo ip l2tp del session tunnel_id 3 session_id 3",
+                "sudo ip l2tp del tunnel tunnel_id 3"
+            ]
+            for cmd in remove_cmds:
+                try:
+                    subprocess.run(cmd.split(), check=True)
+                except subprocess.CalledProcessError as e:
+                    print("Warning: command might have failed or might not exist")
+
+            print("\033[94mRe-running Config file...\033[0m")
+            try:
+                subprocess.run(["/bin/bash", CONFIG_FILE_Client1], check=True)
+                display_checkmark("\033[92mNew L2TP configuration applied!\033[0m")
+            except subprocess.CalledProcessError as e:
+                print(f"Error running {CONFIG_FILE_Client1}: {e}")
+
+            return
+        elif choice == '9':
+            print("\033[93mNo changes made. exiting ..\033[0m")
+            return
+        else:
+            print("Invalid choice, please select a valid option.")
+
+#4
+def edit_l2tp_client_config4():
+    if not os.geteuid() == 0:
+        print("WARNING: You may need to run this script as root (sudo) to edit and reload L2TP.")
+    
+    current_vals = read_config(CONFIG_FILE_Client4)
+    current_peer_ip = get_keepalive_peer_ip()
+
+    while True:
+        os.system("clear")
+        print("\033[92m ^ ^\033[0m")
+        print("\033[92m(\033[91mO,O\033[92m)\033[0m")
+        print("\033[92m(   ) \033[92mL2TP Client [4] \033[93mEdit Menu\033[0m")
+        print(
+        '\033[92m "-"\033[93m═══════════════════════════════════════════════════\033[0m'
+        )
+        print("\033[93m╭───────────────────────────────────────╮\033[0m")
+        print("\n=== L2TP Configuration Menu ===")
+        print("1)\033[93m Local IP [4]\033[97m        :", current_vals["local_ip"])
+        print("\033[0m2)\033[93m Remote IP\033[97m       :", current_vals["remote_ip"])
+        print("\033[0m3)\033[92m UDP Source Port\033[97m :", current_vals["udp_sport"])
+        print("\033[0m4)\033[92m UDP Dest Port\033[97m   :", current_vals["udp_dport"])
+        print("\033[0m5)\033[93m Private IP\033[97m      :", current_vals["private_ip"])
+        print("\033[0m6)\033[93m MTU\033[97m             :", current_vals["mtu"])
+        print(f"7) \033[93mEdit Keepalive Peer IP\033[97m  : {current_peer_ip if current_peer_ip else 'Not Set'}")
+        print("\033[0m8)\033[92m Save & Apply Changes\033[0m")
+        print("9) Exit")
+        print("\033[93m╰───────────────────────────────────────╯\033[0m")
+
+        choice = input("Choose an option [1-9]: ").strip()
+
+        if choice == '1':
+            current_vals["local_ip"] = input("\033[93mEnter \033[92mnew Local IP\033[93m:\033[0m ").strip()
+        elif choice == '2':
+            current_vals["remote_ip"] = input("\033[93mEnter\033[92m new Remote IP\033[93m:\033[0m ").strip()
+        elif choice == '3':
+            current_vals["udp_sport"] = input("\033[93mEnter\033[92m new UDP Source Port\033[93m:\033[0m ").strip()
+        elif choice == '4':
+            current_vals["udp_dport"] = input("\033[93mEnter\033[92m new UDP Dest Port\033[93m:\033[0m ").strip()
+        elif choice == '5':
+            current_vals["private_ip"] = input("\033[93mEnter\033[92m new Private IP (with /mask, e.g. 192.168.4.2/24)\033[93m:\033[0m ").strip()
+        elif choice == '6':
+            current_vals["mtu"] = input("\033[93mEnter\033[92m new MTU\033[93m:\033[0m ").strip()
+        elif choice == '7':
+            if current_peer_ip:
+                print(f"\033[93mCurrent Keepalive Peer IP:\033[92m {current_peer_ip}\033[0m")
+            new_peer_ip = input("\033[93mEnter\033[92m new Peer IP\033[93m (or press Enter to keep current):\033[0m ").strip()
+            if new_peer_ip:
+                update_keepalive_peer_ip(new_peer_ip)
+                print("\033[92mKeepalive Peer IP updated successfully!\033[0m")
+        elif choice == '8':
+            write_config4(CONFIG_FILE_Client4, current_vals)
+
+            display_notification("\033[93mRemoving existing L2TP session and tunnel...\033[0m")
+            remove_cmds = [
+                "sudo ip l2tp del session tunnel_id 4 session_id 4",
+                "sudo ip l2tp del tunnel tunnel_id 4"
+            ]
+            for cmd in remove_cmds:
+                try:
+                    subprocess.run(cmd.split(), check=True)
+                except subprocess.CalledProcessError as e:
+                    print("Warning: command might have failed or might not exist")
+
+            print("\033[94mRe-running Config file...\033[0m")
+            try:
+                subprocess.run(["/bin/bash", CONFIG_FILE_Client1], check=True)
+                display_checkmark("\033[92mNew L2TP configuration applied!\033[0m")
+            except subprocess.CalledProcessError as e:
+                print(f"Error running {CONFIG_FILE_Client1}: {e}")
+
+            return
+        elif choice == '9':
+            print("\033[93mNo changes made. exiting ..\033[0m")
+            return
+        else:
+            print("Invalid choice, please select a valid option.")
+
+#5
+def edit_l2tp_client_config5():
+    if not os.geteuid() == 0:
+        print("WARNING: You may need to run this script as root (sudo) to edit and reload L2TP.")
+    
+    current_vals = read_config(CONFIG_FILE_Client5)
+    current_peer_ip = get_keepalive_peer_ip()
+
+    while True:
+        os.system("clear")
+        print("\033[92m ^ ^\033[0m")
+        print("\033[92m(\033[91mO,O\033[92m)\033[0m")
+        print("\033[92m(   ) \033[92mL2TP Client [5] \033[93mEdit Menu\033[0m")
+        print(
+        '\033[92m "-"\033[93m═══════════════════════════════════════════════════\033[0m'
+        )
+        print("\033[93m╭───────────────────────────────────────╮\033[0m")
+        print("\n=== L2TP Configuration Menu ===")
+        print("1)\033[93m Local IP [5]\033[97m        :", current_vals["local_ip"])
+        print("\033[0m2)\033[93m Remote IP\033[97m       :", current_vals["remote_ip"])
+        print("\033[0m3)\033[92m UDP Source Port\033[97m :", current_vals["udp_sport"])
+        print("\033[0m4)\033[92m UDP Dest Port\033[97m   :", current_vals["udp_dport"])
+        print("\033[0m5)\033[93m Private IP\033[97m      :", current_vals["private_ip"])
+        print("\033[0m6)\033[93m MTU\033[97m             :", current_vals["mtu"])
+        print(f"7) \033[93mEdit Keepalive Peer IP\033[97m  : {current_peer_ip if current_peer_ip else 'Not Set'}")
+        print("\033[0m8)\033[92m Save & Apply Changes\033[0m")
+        print("9) Exit")
+        print("\033[93m╰───────────────────────────────────────╯\033[0m")
+
+        choice = input("Choose an option [1-9]: ").strip()
+
+        if choice == '1':
+            current_vals["local_ip"] = input("\033[93mEnter \033[92mnew Local IP\033[93m:\033[0m ").strip()
+        elif choice == '2':
+            current_vals["remote_ip"] = input("\033[93mEnter\033[92m new Remote IP\033[93m:\033[0m ").strip()
+        elif choice == '3':
+            current_vals["udp_sport"] = input("\033[93mEnter\033[92m new UDP Source Port\033[93m:\033[0m ").strip()
+        elif choice == '4':
+            current_vals["udp_dport"] = input("\033[93mEnter\033[92m new UDP Dest Port\033[93m:\033[0m ").strip()
+        elif choice == '5':
+            current_vals["private_ip"] = input("\033[93mEnter\033[92m new Private IP (with /mask, e.g. 192.168.5.2/24)\033[93m:\033[0m ").strip()
+        elif choice == '6':
+            current_vals["mtu"] = input("\033[93mEnter\033[92m new MTU\033[93m:\033[0m ").strip()
+        elif choice == '7':
+            if current_peer_ip:
+                print(f"\033[93mCurrent Keepalive Peer IP:\033[92m {current_peer_ip}\033[0m")
+            new_peer_ip = input("\033[93mEnter\033[92m new Peer IP\033[93m (or press Enter to keep current):\033[0m ").strip()
+            if new_peer_ip:
+                update_keepalive_peer_ip(new_peer_ip)
+                print("\033[92mKeepalive Peer IP updated successfully!\033[0m")
+        elif choice == '8':
+            write_config5(CONFIG_FILE_Client5, current_vals)
+
+            display_notification("\033[93mRemoving existing L2TP session and tunnel...\033[0m")
+            remove_cmds = [
+                "sudo ip l2tp del session tunnel_id 5 session_id 5",
+                "sudo ip l2tp del tunnel tunnel_id 5"
+            ]
+            for cmd in remove_cmds:
+                try:
+                    subprocess.run(cmd.split(), check=True)
+                except subprocess.CalledProcessError as e:
+                    print("Warning: command might have failed or might not exist")
+
+            print("\033[94mRe-running Config file...\033[0m")
+            try:
+                subprocess.run(["/bin/bash", CONFIG_FILE_Client1], check=True)
+                display_checkmark("\033[92mNew L2TP configuration applied!\033[0m")
+            except subprocess.CalledProcessError as e:
+                print(f"Error running {CONFIG_FILE_Client1}: {e}")
+
+            return
+        elif choice == '9':
+            print("\033[93mNo changes made. exiting ..\033[0m")
+            return
+        else:
+            print("Invalid choice, please select a valid option.")
+
+
+def l2tpv3_menu():
+    os.system("clear")
+    print("\033[92m ^ ^\033[0m")
+    print("\033[92m(\033[91mO,O\033[92m)\033[0m")
+    print("\033[92m(   ) \033[92mL2TP V3 \033[93mMenu\033[0m")
+    print(
+        '\033[92m "-"\033[93m═══════════════════════════════════════════════════\033[0m'
+    )
+    print("\033[93m╭───────────────────────────────────────╮\033[0m")
+    print("\033[93mChoose what to do:\033[0m")
+    print("1. \033[92mServer Configs\033[0m")
+    print("2. \033[93mClients \033[0m")
+    print("q.\033[97mback to previous menu\033[0m")
+    print("\033[93m╰───────────────────────────────────────╯\033[0m")
+    while True:
+        server_type = input("\033[38;5;205mEnter your choice Please: \033[0m")
+        if server_type == "1":
+            l2tp_server_configs()
+            break
+        elif server_type == "2":
+            l2tp_clients()
+            break
+        elif server_type == "q":
+            l2tp_v3_mnu()
+        else:
+            print("Invalid choice.")
+
+def l2tp_server_configs():
+    os.system("clear")
+    print("\033[92m ^ ^\033[0m")
+    print("\033[92m(\033[91mO,O\033[92m)\033[0m")
+    print("\033[92m(   ) \033[92mL2TP V3 \033[93mServer Menu\033[0m")
+    print(
+        '\033[92m "-"\033[93m═══════════════════════════════════════════════════\033[0m'
+    )
+    print("\033[93m╭───────────────────────────────────────╮\033[0m")
+    print("\033[93mChoose what to do:\033[0m")
+    print("1. \033[93mServer Config [1]\033[0m")
+    print("2. \033[92mServer Config [2]\033[0m")
+    print("3. \033[93mServer Config [3]\033[0m")
+    print("4. \033[92mServer Config [4]\033[0m")
+    print("5. \033[93mServer Config [5]\033[0m")
+    print("q.\033[97mback to previous menu\033[0m")
+    print("\033[93m╰───────────────────────────────────────╯\033[0m")
+    while True:
+        server_type = input("\033[38;5;205mEnter your choice Please: \033[0m")
+        if server_type == "1":
+            create_server_config1()
+            break
+        elif server_type == "2":
+            create_server_config2()
+            break
+        elif server_type == "3":
+            create_server_config3()
+            break
+        elif server_type == "4":
+            create_server_config4()
+            break
+        elif server_type == "5":
+            create_server_config5()
+            break
+        elif server_type == "q":
+            l2tpv3_menu()
+        else:
+            print("Invalid choice.")
+
+def l2tp_clients():
+    os.system("clear")
+    print("\033[92m ^ ^\033[0m")
+    print("\033[92m(\033[91mO,O\033[92m)\033[0m")
+    print("\033[92m(   ) \033[92mL2TP V3 \033[93mClients Menu\033[0m")
+    print(
+        '\033[92m "-"\033[93m═══════════════════════════════════════════════════\033[0m'
+    )
+    print("\033[93m╭───────────────────────────────────────╮\033[0m")
+    print("\033[93mChoose what to do:\033[0m")
+    print("1. \033[93mClient Config [1]\033[0m")
+    print("2. \033[92mClient Config [2]\033[0m")
+    print("3. \033[93mClient Config [3]\033[0m")
+    print("4. \033[92mClient Config [4]\033[0m")
+    print("5. \033[93mClient Config [5]\033[0m")
+    print("q.\033[97mback to previous menu\033[0m")
+    print("\033[93m╰───────────────────────────────────────╯\033[0m")
+    while True:
+        server_type = input("\033[38;5;205mEnter your choice Please: \033[0m")
+        if server_type == "1":
+            create_client_config1()
+            break
+        elif server_type == "2":
+            create_client_config2()
+            break
+        elif server_type == "3":
+            create_client_config3()
+            break
+        elif server_type == "4":
+            create_client_config4()
+            break
+        elif server_type == "5":
+            create_client_config5()
+            break
+        elif server_type == "q":
+            l2tpv3_menu()
+        else:
+            print("Invalid choice.")
+
+
+
+def ask_for_input(prompt, default=None):
+    value = input(f"{prompt} [{default}]: ").strip()
+    return value if value else default
+
+def package_installed(package: str) -> bool:
+
+    proc = subprocess.run(["dpkg", "-s", package],
+                          stdout=subprocess.DEVNULL,
+                          stderr=subprocess.DEVNULL)
+    return (proc.returncode == 0)
+
+def install_requirements():
+    print("\033[93m─────────────────────────────────────────────────────────\033[0m")
+    display_notification("\033[93mInstalling required packages...\033[0m")
+    print("\033[93m─────────────────────────────────────────────────────────\033[0m")
+
+    os.system("sudo apt-get update")
+
+    kernel_version = subprocess.getoutput("uname -r").strip()
+    kernel_extra_pkg = f"linux-modules-extra-{kernel_version}"
+
+    if not package_installed(kernel_extra_pkg):
+        print(f"Attempting to install {kernel_extra_pkg} ...")
+        ret = os.system(f"sudo apt-get install -y {kernel_extra_pkg}")
+        if ret != 0:
+            print(f"\033[91mWarning:\033[0m Could not install {kernel_extra_pkg}. Skipping it.")
+    else:
+        print(f"{kernel_extra_pkg} is already installed; skipping.")
+
+    main_packages = ["xl2tpd", "ppp", "iproute2", "iptables", "strongswan"]
+    missing_packages = []
+    for pkg in main_packages:
+        if not package_installed(pkg):
+            missing_packages.append(pkg)
+
+    if not missing_packages:
+        print("\033[94mAll required packages are already installed. Skipping...\033[0m")
+    else:
+        pkgs_str = " ".join(missing_packages)
+        print(f"Installing missing packages: {pkgs_str}")
+        os.system(f"sudo apt-get install -y {pkgs_str}")
+
+def create_strongswan_service():
+    service_content = """
+[Unit]
+Description=strongazumi IPsec IKEv1/IKEv2 daemon using ipsec.conf
+After=network-online.target
+
+[Service]
+ExecStart=/usr/sbin/ipsec start --nofork --conf /etc/ipsec.conf 
+ExecReload=/usr/sbin/ipsec reload
+Restart=always
+RestartSec=5
+LimitNOFILE=1048576
+
+[Install]
+WantedBy=multi-user.target
+    """
+
+    service_path = "/etc/systemd/system/strong-azumi1.service"
+    with open(service_path, "w") as f:
+        f.write(service_content)
+
+    os.system("sudo systemctl daemon-reload")
+    os.system("sudo systemctl enable strong-azumi1")
+    os.system("sudo systemctl start strong-azumi1")
+
+def display_checkmark(message):
+    print("\u2714 " + message)
+
+
+def display_error(message):
+    print("\u2718 Error: " + message)
+
+
+def display_notification(message):
+    print("\u2728 " + message)
+
+def create_keepalive_service(private_ip):
+
+    parts = private_ip.rsplit('.', 1)
+    if len(parts) != 2:
+        return
+
+    base, last_octet = parts
+    if last_octet == '1':
+        peer_ip = base + '.2'
+    else:
+        peer_ip = base + '.1'
+
+    keepalive_script_path = "/usr/local/bin/l2tp_keepalive.sh"
+    with open(keepalive_script_path, "w") as f:
+        f.write(f"""#!/usr/bin/env bash
+
+while true
+do
+    # Ping 2 times
+    ping -c 2 {peer_ip}
+    # Sleep for 5 seconds
+    sleep 5
+done
+""")
+
+    os.chmod(keepalive_script_path, 0o755)
+
+    service_file = "/etc/systemd/system/l2tp-keepalive.service"
+    with open(service_file, "w") as f:
+        f.write(f"""[Unit]
+Description=L2TP Keepalive (Server)
+After=network.target
+
+[Service]
+ExecStart={keepalive_script_path}
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+""")
+
+    os.system("systemctl daemon-reload")
+    os.system("systemctl enable l2tp-keepalive.service")
+    os.system("systemctl start l2tp-keepalive.service")
+
+    display_notification("\033[92mKeepalive service for server configured and started.\033[0m")
+
+def create_keepalive_service1(private_ip):
+
+    parts = private_ip.rsplit('.', 1)
+    if len(parts) != 2:
+        return
+
+    base, last_octet = parts
+    if last_octet == '1':
+        peer_ip = base + '.2'
+    else:
+        peer_ip = base + '.1'
+
+    keepalive_script_path = "/usr/local/bin/l2tp_keepalive1.sh"
+    with open(keepalive_script_path, "w") as f:
+        f.write(f"""#!/usr/bin/env bash
+
+while true
+do
+    # Ping 2 times
+    ping -c 2 {peer_ip}
+    # Sleep for 5 seconds
+    sleep 5
+done
+""")
+
+    os.chmod(keepalive_script_path, 0o755)
+
+    service_file = "/etc/systemd/system/l2tp-keepalive1.service"
+    with open(service_file, "w") as f:
+        f.write(f"""[Unit]
+Description=L2TP Keepalive (Server)
+After=network.target
+
+[Service]
+ExecStart={keepalive_script_path}
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+""")
+
+    os.system("systemctl daemon-reload")
+    os.system("systemctl enable l2tp-keepalive1.service")
+    os.system("systemctl start l2tp-keepalive1.service")
+
+    display_notification("\033[92mKeepalive service for server configured and started.\033[0m")
+
+def create_keepalive_service2(private_ip):
+
+    parts = private_ip.rsplit('.', 1)
+    if len(parts) != 2:
+        return
+
+    base, last_octet = parts
+    if last_octet == '1':
+        peer_ip = base + '.2'
+    else:
+        peer_ip = base + '.1'
+
+    keepalive_script_path = "/usr/local/bin/l2tp_keepalive2.sh"
+    with open(keepalive_script_path, "w") as f:
+        f.write(f"""#!/usr/bin/env bash
+
+while true
+do
+    # Ping 2 times
+    ping -c 2 {peer_ip}
+    # Sleep for 5 seconds
+    sleep 5
+done
+""")
+
+    os.chmod(keepalive_script_path, 0o755)
+
+    service_file = "/etc/systemd/system/l2tp-keepalive2.service"
+    with open(service_file, "w") as f:
+        f.write(f"""[Unit]
+Description=L2TP Keepalive (Server)
+After=network.target
+
+[Service]
+ExecStart={keepalive_script_path}
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+""")
+
+    os.system("systemctl daemon-reload")
+    os.system("systemctl enable l2tp-keepalive2.service")
+    os.system("systemctl start l2tp-keepalive2.service")
+
+    display_notification("\033[92mKeepalive service for server configured and started.\033[0m")
+
+def create_keepalive_service3(private_ip):
+
+    parts = private_ip.rsplit('.', 1)
+    if len(parts) != 2:
+        return
+
+    base, last_octet = parts
+    if last_octet == '1':
+        peer_ip = base + '.2'
+    else:
+        peer_ip = base + '.1'
+
+    keepalive_script_path = "/usr/local/bin/l2tp_keepalive3.sh"
+    with open(keepalive_script_path, "w") as f:
+        f.write(f"""#!/usr/bin/env bash
+
+while true
+do
+    # Ping 2 times
+    ping -c 2 {peer_ip}
+    # Sleep for 5 seconds
+    sleep 5
+done
+""")
+
+    os.chmod(keepalive_script_path, 0o755)
+
+    service_file = "/etc/systemd/system/l2tp-keepalive3.service"
+    with open(service_file, "w") as f:
+        f.write(f"""[Unit]
+Description=L2TP Keepalive (Server)
+After=network.target
+
+[Service]
+ExecStart={keepalive_script_path}
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+""")
+
+    os.system("systemctl daemon-reload")
+    os.system("systemctl enable l2tp-keepalive3.service")
+    os.system("systemctl start l2tp-keepalive3.service")
+
+    display_notification("\033[92mKeepalive service for server configured and started.\033[0m")
+
+def create_keepalive_service4(private_ip):
+
+    parts = private_ip.rsplit('.', 1)
+    if len(parts) != 2:
+        return
+
+    base, last_octet = parts
+    if last_octet == '1':
+        peer_ip = base + '.2'
+    else:
+        peer_ip = base + '.1'
+
+    keepalive_script_path = "/usr/local/bin/l2tp_keepalive4.sh"
+    with open(keepalive_script_path, "w") as f:
+        f.write(f"""#!/usr/bin/env bash
+
+while true
+do
+    # Ping 2 times
+    ping -c 2 {peer_ip}
+    # Sleep for 5 seconds
+    sleep 5
+done
+""")
+
+    os.chmod(keepalive_script_path, 0o755)
+
+    service_file = "/etc/systemd/system/l2tp-keepalive4.service"
+    with open(service_file, "w") as f:
+        f.write(f"""[Unit]
+Description=L2TP Keepalive (Server)
+After=network.target
+
+[Service]
+ExecStart={keepalive_script_path}
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+""")
+
+    os.system("systemctl daemon-reload")
+    os.system("systemctl enable l2tp-keepalive4.service")
+    os.system("systemctl start l2tp-keepalive4.service")
+
+    display_notification("\033[92mKeepalive service for server configured and started.\033[0m")
+
+def create_keepalive_service5(private_ip):
+
+    parts = private_ip.rsplit('.', 1)
+    if len(parts) != 2:
+        return
+
+    base, last_octet = parts
+    if last_octet == '1':
+        peer_ip = base + '.2'
+    else:
+        peer_ip = base + '.1'
+
+    keepalive_script_path = "/usr/local/bin/l2tp_keepalive5.sh"
+    with open(keepalive_script_path, "w") as f:
+        f.write(f"""#!/usr/bin/env bash
+
+while true
+do
+    # Ping 2 times
+    ping -c 2 {peer_ip}
+    # Sleep for 5 seconds
+    sleep 5
+done
+""")
+
+    os.chmod(keepalive_script_path, 0o755)
+
+    service_file = "/etc/systemd/system/l2tp-keepalive5.service"
+    with open(service_file, "w") as f:
+        f.write(f"""[Unit]
+Description=L2TP Keepalive (Server)
+After=network.target
+
+[Service]
+ExecStart={keepalive_script_path}
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+""")
+
+    os.system("systemctl daemon-reload")
+    os.system("systemctl enable l2tp-keepalive5.service")
+    os.system("systemctl start l2tp-keepalive5.service")
+
+    display_notification("\033[92mKeepalive service for server configured and started.\033[0m")
+
+def create_server_config1():
+    install_requirements()
+    print("\033[93m───────────────────────────────────────\033[0m")
+    display_notification("\033[93mConfig [1]\033[0m")
+    print("\033[93m───────────────────────────────────────\033[0m")
+    
+    server_ip = ask_for_input("\033[93mEnter \033[92mServer Public IP\033[93m address\033[0m", "eg, server public ip")
+    client_ip_cmd = ask_for_input("\033[93mEnter \033[92mClient [1] Public IP\033[93m address\033[0m", "eg, client public ip")
+    ip_range_start = ask_for_input("\033[93mEnter \033[92mthe starting IP\033[93m for the range\033[0m", "eg, 192.168.1.0")
+    ip_range_end = ask_for_input("\033[93mEnter \033[92mthe ending IP\033[93m for the range\033[0m", "eg, 192.168.1.10")
+    private_ip = ask_for_input("\033[93mEnter \033[92mL2TP\033[93m Private IP\033[0m", "eg, 192.168.1.1")
+    udp = ask_for_input("\033[93mEnter \033[92mUDP\033[93m Port\033[0m", "8000")
+    mtu_cli = ask_for_input("\033[93mEnter \033[92mL2TP\033[93m MTU\033[0m", "1410")
+    mtu = ask_for_input("\033[93mEnter \033[92mX2ltp\033[93m MTU value\033[0m", "1410")
+    mru = ask_for_input("\033[93mEnter \033[92mX2ltp\033[93m MRU value\033[0m", "1410")
+
+    enable_ipsec = ask_for_input("\033[93mDo you want to \033[92menable IPsec\033[93m? (\033[92my\033[93m/\033[91mn\033[93m)\033[0m", "eg, y").lower()
+
+    if enable_ipsec == 'y':
+        secret_key = ask_for_input("\033[93mEnter the \033[92msecret key\033[93m for IPsec\033[0m", "secretkey")
+    else:
+        secret_key = None  
+    
+
+    if enable_ipsec == 'y':
+        num_clients = int(ask_for_input("\033[93mHow many \033[92mclients\033[93m will connect?\033[0m"))
+        client_ips = []
+        for i in range(num_clients):
+            client_ip = ask_for_input(f"\033[93mEnter\033[92m Client\033[97m {i + 1}\033[93m Public IP address\033[0m", "eg, client public ip")
+            client_ips.append(client_ip)
+
+        with open("/etc/ipsec.conf", "w") as f:
+            f.write(f"""
+config setup
+    charondebug="ike 2, knl 2, cfg 2"
+
+conn %default
+    keyexchange=ikev1
+    authby=secret
+    type=transport
+""")
+            for i, client_ip in enumerate(client_ips):
+                f.write(f"""
+conn L2TP-PSK-{i + 1}
+    auto=add
+    left={server_ip}
+    leftprotoport=17/1701
+    right={client_ip}
+    rightprotoport=17/1701
+    ike=aes256-sha1-modp1024
+    esp=aes256-sha1
+""")
+
+        with open("/etc/ipsec.secrets", "w") as f:
+            for client_ip in client_ips:
+                f.write(f"{server_ip} {client_ip} : PSK \"{secret_key}\"\n")
+
+    with open("/etc/xl2tpd/xl2tpd.conf", "w") as f:
+        f.write(f"""
+[global]
+port = 1701
+ipsec saref = yes
+force userspace = yes
+
+[lns default]
+ip range = {ip_range_start}-{ip_range_end}
+local ip = {private_ip}
+require chap = no
+refuse pap = yes
+require authentication = no
+name = l2tpd
+ppp debug = yes
+pppoptfile = /etc/ppp/options.xl2tpd
+length bit = yes
+""")
+
+    with open("/etc/ppp/options.xl2tpd", "w") as f:
+        f.write(f"""
+ipcp-accept-local
+ipcp-accept-remote
+refuse-eap
+noccp
+noauth
+mtu {mtu}
+mru {mru}
+proxyarp
+debug
+lock
+nobsdcomp
+nodeflate
+""")
+
+    create_strongswan_service()
+
+    l2tp_bash_command = f"""
+sudo ip l2tp add tunnel tunnel_id 1 peer_tunnel_id 1 encap udp local {server_ip} remote {client_ip_cmd} udp_sport {udp} udp_dport {udp}
+sudo ip l2tp add session tunnel_id 1 session_id 1 peer_session_id 1
+sudo ip link set l2tpeth0 up
+sudo ip addr add {private_ip}/24 dev l2tpeth0
+sudo ip link set l2tpeth0 mtu {mtu_cli}
+"""
+
+    script_path = "/usr/local/bin/l2tp_server1.sh"
+    with open(script_path, "w") as f:
+        f.write(l2tp_bash_command)
+
+    os.chmod(script_path, 0o755)
+    os.system(script_path)
+
+    os.system("(crontab -l; echo '@reboot /usr/local/bin/l2tp_server1.sh') | crontab -")
+    os.system(f"sudo ufw allow {udp}/udp")
+    os.system("sudo ufw allow 1701/udp")
+    create_keepalive_service1(private_ip)
+
+    display_checkmark("\033[92mServer setup completed! L2TP tunnel and IPsec configuration has been set\033[0m")
+
+#server config 2 without x2ltp
+
+def create_server_config2():
+    install_requirements()
+    print("\033[93m───────────────────────────────────────\033[0m")
+    display_notification("\033[93mConfig [2]\033[0m")
+    print("\033[93m───────────────────────────────────────\033[0m")
+    server_ip = ask_for_input("\033[93mEnter \033[92mServer Public IP\033[93m address\033[0m", "eg, server public ip")
+    client_ip = ask_for_input("\033[93mEnter \033[92mClient [2]\033[93m Public IP address\033[0m", "eg, client public ip")
+    private_ip = ask_for_input("\033[93mEnter \033[92mL2TP \033[93mPivate IP\033[96m Config [2]\033[0m", "eg, 192.168.2.1")
+    udp = ask_for_input("\033[93mEnter \033[92mUDP\033[93m Port\033[96m Config [2]\033[0m", "8001")
+    mtu_cli = ask_for_input("\033[93mEnter \033[92mL2TP\033[96m Config [2]\033[93m MTU\033[0m", "eg, 1410")
+
+
+    l2tp_bash_command = f"""
+sudo ip l2tp add tunnel tunnel_id 2 peer_tunnel_id 2 encap udp local {server_ip} remote {client_ip} udp_sport {udp} udp_dport {udp}
+sudo ip l2tp add session tunnel_id 2 session_id 2 peer_session_id 2
+sudo ip link set l2tpeth1 up
+sudo ip addr add {private_ip}/24 dev l2tpeth1
+sudo ip link set l2tpeth1 mtu {mtu_cli}
+"""
+
+
+    script_path = "/usr/local/bin/l2tp_server2.sh"
+    with open(script_path, "w") as f:
+        f.write(l2tp_bash_command)
+
+    os.chmod(script_path, 0o755)
+    os.system(script_path)
+
+    os.system("(crontab -l; echo '@reboot /usr/local/bin/l2tp_server2.sh') | crontab -")
+    os.system(f"sudo ufw allow {udp}/udp")
+    create_keepalive_service2(private_ip)
+    display_checkmark("\033[92mServer setup completed! L2TP tunnel and IPsec configuration has been set\033[0m")
+
+#3
+def create_server_config3():
+    install_requirements()
+    print("\033[93m───────────────────────────────────────\033[0m")
+    display_notification("\033[93mConfig [3]\033[0m")
+    print("\033[93m───────────────────────────────────────\033[0m")
+    server_ip = ask_for_input("\033[93mEnter \033[92mServer Public IP\033[93m address\033[0m", "eg, server public ip")
+    client_ip = ask_for_input("\033[93mEnter \033[92mClient [3]\033[93m Public IP address\033[0m", "eg, client public ip")
+    private_ip = ask_for_input("\033[93mEnter \033[92mL2TP \033[93mPivate IP\033[96m Config [3]\033[0m", "eg, 192.168.3.1")
+    udp = ask_for_input("\033[93mEnter \033[92mUDP\033[93m Port\033[96m Config [3]\033[0m", "8002")
+    mtu_cli = ask_for_input("\033[93mEnter \033[92mL2TP\033[96m Config [3]\033[93m MTU\033[0m", "eg, 1410")
+
+
+    l2tp_bash_command = f"""
+sudo ip l2tp add tunnel tunnel_id 3 peer_tunnel_id 3 encap udp local {server_ip} remote {client_ip} udp_sport {udp} udp_dport {udp}
+sudo ip l2tp add session tunnel_id 3 session_id 3 peer_session_id 3
+sudo ip link set l2tpeth3 up
+sudo ip addr add {private_ip}/24 dev l2tpeth3
+sudo ip link set l2tpeth3 mtu {mtu_cli}
+"""
+
+
+    script_path = "/usr/local/bin/l2tp_server3.sh"
+    with open(script_path, "w") as f:
+        f.write(l2tp_bash_command)
+
+    os.chmod(script_path, 0o755)
+    os.system(script_path)
+
+    os.system("(crontab -l; echo '@reboot /usr/local/bin/l2tp_server3.sh') | crontab -")
+    os.system(f"sudo ufw allow {udp}/udp")
+    create_keepalive_service3(private_ip)
+    display_checkmark("\033[92mServer setup completed! L2TP tunnel and IPsec configuration has been set\033[0m")
+
+
+#4
+def create_server_config4():
+    install_requirements()
+    print("\033[93m───────────────────────────────────────\033[0m")
+    display_notification("\033[93mConfig [4]\033[0m")
+    print("\033[93m───────────────────────────────────────\033[0m")
+    server_ip = ask_for_input("\033[93mEnter \033[92mServer Public IP\033[93m address\033[0m", "eg, server public ip")
+    client_ip = ask_for_input("\033[93mEnter \033[92mClient [4]\033[93m Public IP address\033[0m", "eg, client public ip")
+    private_ip = ask_for_input("\033[93mEnter \033[92mL2TP \033[93mPivate IP\033[96m Config [4]\033[0m", "eg, 192.168.4.1")
+    udp = ask_for_input("\033[93mEnter \033[92mUDP\033[93m Port\033[96m Config [4]\033[0m", "8003")
+    mtu_cli = ask_for_input("\033[93mEnter \033[92mL2TP\033[96m Config [4]\033[93m MTU\033[0m", "eg, 1410")
+
+
+    l2tp_bash_command = f"""
+sudo ip l2tp add tunnel tunnel_id 4 peer_tunnel_id 4 encap udp local {server_ip} remote {client_ip} udp_sport {udp} udp_dport {udp}
+sudo ip l2tp add session tunnel_id 4 session_id 4 peer_session_id 4
+sudo ip link set l2tpeth4 up
+sudo ip addr add {private_ip}/24 dev l2tpeth4
+sudo ip link set l2tpeth4 mtu {mtu_cli}
+"""
+
+
+    script_path = "/usr/local/bin/l2tp_server4.sh"
+    with open(script_path, "w") as f:
+        f.write(l2tp_bash_command)
+
+    os.chmod(script_path, 0o755)
+    os.system(script_path)
+
+    os.system("(crontab -l; echo '@reboot /usr/local/bin/l2tp_server4.sh') | crontab -")
+    os.system(f"sudo ufw allow {udp}/udp")
+    create_keepalive_service4(private_ip)
+    display_checkmark("\033[92mServer setup completed! L2TP tunnel and IPsec configuration has been set\033[0m")
+
+
+#5
+def create_server_config5():
+    install_requirements()
+    print("\033[93m───────────────────────────────────────\033[0m")
+    display_notification("\033[93mConfig [5]\033[0m")
+    print("\033[93m───────────────────────────────────────\033[0m")
+    server_ip = ask_for_input("\033[93mEnter \033[92mServer Public IP\033[93m address\033[0m", "eg, server public ip")
+    client_ip = ask_for_input("\033[93mEnter \033[92mClient [5]\033[93m Public IP address\033[0m", "eg, client public ip")
+    private_ip = ask_for_input("\033[93mEnter \033[92mL2TP \033[93mPivate IP\033[96m Config [5]\033[0m", "eg, 192.168.5.1")
+    udp = ask_for_input("\033[93mEnter \033[92mUDP\033[93m Port\033[96m Config [5]\033[0m", "8004")
+    mtu_cli = ask_for_input("\033[93mEnter \033[92mL2TP\033[96m Config [5]\033[93m MTU\033[0m", "eg, 1410")
+
+
+    l2tp_bash_command = f"""
+sudo ip l2tp add tunnel tunnel_id 5 peer_tunnel_id 5 encap udp local {server_ip} remote {client_ip} udp_sport {udp} udp_dport {udp}
+sudo ip l2tp add session tunnel_id 5 session_id 5 peer_session_id 5
+sudo ip link set l2tpeth5 up
+sudo ip addr add {private_ip}/24 dev l2tpeth5
+sudo ip link set l2tpeth5 mtu {mtu_cli}
+"""
+
+
+    script_path = "/usr/local/bin/l2tp_server5.sh"
+    with open(script_path, "w") as f:
+        f.write(l2tp_bash_command)
+
+    os.chmod(script_path, 0o755)
+    os.system(script_path)
+
+    os.system("(crontab -l; echo '@reboot /usr/local/bin/l2tp_server5.sh') | crontab -")
+    os.system(f"sudo ufw allow {udp}/udp")
+    create_keepalive_service5(private_ip)
+    display_checkmark("\033[92mServer setup completed! L2TP tunnel and IPsec configuration has been set\033[0m")
+
+#client1
+
+def create_client_config1():
+    install_requirements()
+    print("\033[93m───────────────────────────────────────\033[0m")
+    display_notification("\033[93mClient [1]\033[0m")
+    print("\033[93m───────────────────────────────────────\033[0m")
+
+    client_ip = ask_for_input("\033[93mEnter \033[92mClient [1]\033[93m Public IP address\033[0m", "client public ip")
+    server_ip = ask_for_input("\033[93mEnter \033[92mServer Public IP\033[93m address\033[0m", "server public ip")
+    ip_range_start = ask_for_input("\033[93mEnter \033[92mthe starting IP\033[93m for the range\033[0m", "192.168.1.0")
+    ip_range_end = ask_for_input("\033[93mEnter \033[92mthe ending IP\033[93m for the range\033[0m", "192.168.1.10")
+    private_ip = ask_for_input("\033[93mEnter \033[92mL2TP\033[93m Private IP\033[0m", "192.168.1.2")
+    udp = ask_for_input("\033[93mEnter \033[92mUDP\033[93m Port\033[0m", "8000")
+    mtu_cli = ask_for_input("\033[93mEnter \033[92mL2TP\033[93m MTU\033[0m", "1410")
+    mtu = ask_for_input("\033[93mEnter \033[92mX2ltp\033[93m MTU value\033[0m", "1410")
+    mru = ask_for_input("\033[93mEnter \033[92mX2ltp\033[93m MRU value\033[0m", "1410")
+    enable_ipsec = ask_for_input("\033[93mDo you want to \033[92menable IPsec\033[93m? (\033[92my\033[93m/\033[91mn\033[93m)\033[0m", "y").lower()
+
+    if enable_ipsec == 'y':
+        psk = ask_for_input("\033[93mEnter the secret key for L2TP\033[0m", "secretkey")
+    else:
+        psk = None
+
+
+    with open("/etc/xl2tpd/xl2tpd.conf", "w") as f:
+        f.write(f"""
+[global]
+port = 1701
+ipsec saref = yes
+force userspace = yes
+
+[lns default]
+ip range = {ip_range_start}-{ip_range_end}
+local ip = {private_ip}
+require chap = no
+refuse pap = yes
+require authentication = no
+name = l2tpd
+ppp debug = yes
+pppoptfile = /etc/ppp/options.xl2tpd
+length bit = yes
+""")
+
+    with open("/etc/ppp/options.xl2tpd", "w") as f:
+        f.write(f"""
+ipcp-accept-local
+ipcp-accept-remote
+refuse-eap
+noccp
+noauth
+mtu {mtu}
+mru {mru}
+proxyarp
+debug
+lock
+nobsdcomp
+nodeflate
+""")
+
+
+    if enable_ipsec == 'y':
+        with open("/etc/ipsec.conf", "w") as f:
+            f.write(f"""
+config setup
+    charondebug="ike 2, knl 2, cfg 2"
+
+conn %default
+    keyexchange=ikev1
+    authby=secret
+    type=transport
+
+conn L2TP-PSK
+    auto=add
+    left={client_ip}
+    leftprotoport=17/1701
+    right={server_ip}
+    rightprotoport=17/1701
+    ike=aes256-sha1-modp1024
+    esp=aes256-sha1
+""")
+
+        with open("/etc/ipsec.secrets", "w") as f:
+            f.write(f"{client_ip} {server_ip} : PSK \"{psk}\"\n")
+
+        create_strongswan_service()
+
+        os.system("sudo systemctl stop strongswan")
+        os.system("sudo systemctl stop strongswan-starter")
+        os.system("sudo systemctl start strong-azumi1")
+
+    l2tp_bash_command = f"""#!/usr/bin/env bash
+sudo ip l2tp add tunnel tunnel_id 1 peer_tunnel_id 1 encap udp local {client_ip} remote {server_ip} udp_sport {udp} udp_dport {udp}
+sudo ip l2tp add session tunnel_id 1 session_id 1 peer_session_id 1
+sudo ip link set l2tpeth0 up
+sudo ip addr add {private_ip}/24 dev l2tpeth0
+sudo ip link set l2tpeth0 mtu {mtu_cli}
+"""
+
+    script_path = "/usr/local/bin/l2tp_client1.sh"
+    with open(script_path, "w") as f:
+        f.write(l2tp_bash_command)
+
+    os.chmod(script_path, 0o755)
+    os.system(script_path)
+    os.system(f"(crontab -l; echo '@reboot {script_path}') | crontab -")
+    os.system(f"sudo ufw allow {udp}/udp")
+    os.system("sudo ufw allow 1701/udp")
+    create_keepalive_service(private_ip)
+
+    display_checkmark("\033[92mClient setup completed! L2TP tunnel configuration has been set.\033[0m")
+    if enable_ipsec == 'y':
+        display_notification("\033[93mIPsec (PSK) configuration also enabled.\033[0m")
+
+#client 2
+def create_client_config2():
+    install_requirements()
+    print("\033[93m───────────────────────────────────────\033[0m")
+    display_notification("\033[93mClient [2]\033[0m")
+    print("\033[93m───────────────────────────────────────\033[0m")
+
+    client_ip = ask_for_input("\033[93mEnter \033[92mClient [2]\033[93m Public IP address\033[0m", "client public ip")
+    server_ip = ask_for_input("\033[93mEnter \033[92mServer Public IP\033[93m address\033[0m", "server public ip")
+    ip_range_start = ask_for_input("\033[93mEnter \033[92mthe starting IP\033[93m for the range\033[0m", "192.168.2.0")
+    ip_range_end = ask_for_input("\033[93mEnter \033[92mthe ending IP\033[93m for the range\033[0m", "192.168.2.10")
+    private_ip = ask_for_input("\033[93mEnter \033[92mL2TP\033[93m Private IP\033[0m", "192.168.2.2")
+    udp = ask_for_input("\033[93mEnter \033[92mUDP\033[93m Port\033[0m", "8001")
+    mtu_cli = ask_for_input("\033[93mEnter \033[92mL2TP\033[93m MTU\033[0m", "1410")
+    mtu = ask_for_input("\033[93mEnter \033[92mX2ltp\033[93m MTU value\033[0m", "1410")
+    mru = ask_for_input("\033[93mEnter \033[92mX2ltp\033[93m MRU value\033[0m", "1410")
+    enable_ipsec = ask_for_input("\033[93mDo you want to \033[92menable IPsec\033[93m? (\033[92my\033[93m/\033[91mn\033[93m)\033[0m", "y").lower()
+
+    if enable_ipsec == 'y':
+        psk = ask_for_input("\033[93mEnter the secret key for L2TP\033[0m", "secretkey")
+    else:
+        psk = None
+
+
+    with open("/etc/xl2tpd/xl2tpd.conf", "w") as f:
+        f.write(f"""
+[global]
+port = 1701
+ipsec saref = yes
+force userspace = yes
+
+[lns default]
+ip range = {ip_range_start}-{ip_range_end}
+local ip = {private_ip}
+require chap = no
+refuse pap = yes
+require authentication = no
+name = l2tpd
+ppp debug = yes
+pppoptfile = /etc/ppp/options.xl2tpd
+length bit = yes
+""")
+
+    with open("/etc/ppp/options.xl2tpd", "w") as f:
+        f.write(f"""
+ipcp-accept-local
+ipcp-accept-remote
+refuse-eap
+noccp
+noauth
+mtu {mtu}
+mru {mru}
+proxyarp
+debug
+lock
+nobsdcomp
+nodeflate
+""")
+
+
+    if enable_ipsec == 'y':
+        with open("/etc/ipsec.conf", "w") as f:
+            f.write(f"""
+config setup
+    charondebug="ike 2, knl 2, cfg 2"
+
+conn %default
+    keyexchange=ikev1
+    authby=secret
+    type=transport
+
+conn L2TP-PSK
+    auto=add
+    left={client_ip}
+    leftprotoport=17/1701
+    right={server_ip}
+    rightprotoport=17/1701
+    ike=aes256-sha1-modp1024
+    esp=aes256-sha1
+""")
+
+        with open("/etc/ipsec.secrets", "w") as f:
+            f.write(f"{client_ip} {server_ip} : PSK \"{psk}\"\n")
+
+        create_strongswan_service()
+
+        os.system("sudo systemctl stop strongswan")
+        os.system("sudo systemctl stop strongswan-starter")
+        os.system("sudo systemctl start strong-azumi1")
+
+    l2tp_bash_command = f"""#!/usr/bin/env bash
+sudo ip l2tp add tunnel tunnel_id 2 peer_tunnel_id 2 encap udp local {client_ip} remote {server_ip} udp_sport {udp} udp_dport {udp}
+sudo ip l2tp add session tunnel_id 2 session_id 2 peer_session_id 2
+sudo ip link set l2tpeth0 up
+sudo ip addr add {private_ip}/24 dev l2tpeth0
+sudo ip link set l2tpeth0 mtu {mtu_cli}
+"""
+
+    script_path = "/usr/local/bin/l2tp_client2.sh"
+    with open(script_path, "w") as f:
+        f.write(l2tp_bash_command)
+
+    os.chmod(script_path, 0o755)
+    os.system(script_path)
+    os.system(f"(crontab -l; echo '@reboot {script_path}') | crontab -")
+    os.system(f"sudo ufw allow {udp}/udp")
+    os.system("sudo ufw allow 1701/udp")
+    create_keepalive_service(private_ip)
+
+    display_checkmark("\033[92mClient setup completed! L2TP tunnel configuration has been set.\033[0m")
+    if enable_ipsec == 'y':
+        display_notification("\033[93mIPsec (PSK) configuration also enabled.\033[0m")
+
+#3
+def create_client_config3():
+    install_requirements()
+    print("\033[93m───────────────────────────────────────\033[0m")
+    display_notification("\033[93mClient [3]\033[0m")
+    print("\033[93m───────────────────────────────────────\033[0m")
+
+    client_ip = ask_for_input("\033[93mEnter \033[92mClient [3]\033[93m Public IP address\033[0m", "client public ip")
+    server_ip = ask_for_input("\033[93mEnter \033[92mServer Public IP\033[93m address\033[0m", "server public ip")
+    ip_range_start = ask_for_input("\033[93mEnter \033[92mthe starting IP\033[93m for the range\033[0m", "192.168.3.0")
+    ip_range_end = ask_for_input("\033[93mEnter \033[92mthe ending IP\033[93m for the range\033[0m", "192.168.3.10")
+    private_ip = ask_for_input("\033[93mEnter \033[92mL2TP\033[93m Private IP\033[0m", "192.168.3.2")
+    udp = ask_for_input("\033[93mEnter \033[92mUDP\033[93m Port\033[0m", "8002")
+    mtu_cli = ask_for_input("\033[93mEnter \033[92mL2TP\033[93m MTU\033[0m", "1410")
+    mtu = ask_for_input("\033[93mEnter \033[92mX2ltp\033[93m MTU value\033[0m", "1410")
+    mru = ask_for_input("\033[93mEnter \033[92mX2ltp\033[93m MRU value\033[0m", "1410")
+    enable_ipsec = ask_for_input("\033[93mDo you want to \033[92menable IPsec\033[93m? (\033[92my\033[93m/\033[91mn\033[93m)\033[0m", "y").lower()
+
+    if enable_ipsec == 'y':
+        psk = ask_for_input("\033[93mEnter the secret key for L2TP\033[0m", "secretkey")
+    else:
+        psk = None
+
+
+    with open("/etc/xl2tpd/xl2tpd.conf", "w") as f:
+        f.write(f"""
+[global]
+port = 1701
+ipsec saref = yes
+force userspace = yes
+
+[lns default]
+ip range = {ip_range_start}-{ip_range_end}
+local ip = {private_ip}
+require chap = no
+refuse pap = yes
+require authentication = no
+name = l2tpd
+ppp debug = yes
+pppoptfile = /etc/ppp/options.xl2tpd
+length bit = yes
+""")
+
+    with open("/etc/ppp/options.xl2tpd", "w") as f:
+        f.write(f"""
+ipcp-accept-local
+ipcp-accept-remote
+refuse-eap
+noccp
+noauth
+mtu {mtu}
+mru {mru}
+proxyarp
+debug
+lock
+nobsdcomp
+nodeflate
+""")
+
+
+    if enable_ipsec == 'y':
+        with open("/etc/ipsec.conf", "w") as f:
+            f.write(f"""
+config setup
+    charondebug="ike 2, knl 2, cfg 2"
+
+conn %default
+    keyexchange=ikev1
+    authby=secret
+    type=transport
+
+conn L2TP-PSK
+    auto=add
+    left={client_ip}
+    leftprotoport=17/1701
+    right={server_ip}
+    rightprotoport=17/1701
+    ike=aes256-sha1-modp1024
+    esp=aes256-sha1
+""")
+
+        with open("/etc/ipsec.secrets", "w") as f:
+            f.write(f"{client_ip} {server_ip} : PSK \"{psk}\"\n")
+
+        create_strongswan_service()
+
+        os.system("sudo systemctl stop strongswan")
+        os.system("sudo systemctl stop strongswan-starter")
+        os.system("sudo systemctl start strong-azumi1")
+
+    l2tp_bash_command = f"""#!/usr/bin/env bash
+sudo ip l2tp add tunnel tunnel_id 3 peer_tunnel_id 3 encap udp local {client_ip} remote {server_ip} udp_sport {udp} udp_dport {udp}
+sudo ip l2tp add session tunnel_id 3 session_id 3 peer_session_id 3
+sudo ip link set l2tpeth0 up
+sudo ip addr add {private_ip}/24 dev l2tpeth0
+sudo ip link set l2tpeth0 mtu {mtu_cli}
+"""
+
+    script_path = "/usr/local/bin/l2tp_client3.sh"
+    with open(script_path, "w") as f:
+        f.write(l2tp_bash_command)
+
+    os.chmod(script_path, 0o755)
+    os.system(script_path)
+    os.system(f"(crontab -l; echo '@reboot {script_path}') | crontab -")
+    os.system(f"sudo ufw allow {udp}/udp")
+    os.system("sudo ufw allow 1701/udp")
+    create_keepalive_service(private_ip)
+
+    display_checkmark("\033[92mClient setup completed! L2TP tunnel configuration has been set.\033[0m")
+    if enable_ipsec == 'y':
+        display_notification("\033[93mIPsec (PSK) configuration also enabled.\033[0m")
+
+
+#4
+def create_client_config4():
+    install_requirements()
+    print("\033[93m───────────────────────────────────────\033[0m")
+    display_notification("\033[93mClient [4]\033[0m")
+    print("\033[93m───────────────────────────────────────\033[0m")
+
+    client_ip = ask_for_input("\033[93mEnter \033[92mClient [4]\033[93m Public IP address\033[0m", "client public ip")
+    server_ip = ask_for_input("\033[93mEnter \033[92mServer Public IP\033[93m address\033[0m", "server public ip")
+    ip_range_start = ask_for_input("\033[93mEnter \033[92mthe starting IP\033[93m for the range\033[0m", "192.168.4.0")
+    ip_range_end = ask_for_input("\033[93mEnter \033[92mthe ending IP\033[93m for the range\033[0m", "192.168.4.10")
+    private_ip = ask_for_input("\033[93mEnter \033[92mL2TP\033[93m Private IP\033[0m", "192.168.4.2")
+    udp = ask_for_input("\033[93mEnter \033[92mUDP\033[93m Port\033[0m", "8003")
+    mtu_cli = ask_for_input("\033[93mEnter \033[92mL2TP\033[93m MTU\033[0m", "1410")
+    mtu = ask_for_input("\033[93mEnter \033[92mX2ltp\033[93m MTU value\033[0m", "1410")
+    mru = ask_for_input("\033[93mEnter \033[92mX2ltp\033[93m MRU value\033[0m", "1410")
+    enable_ipsec = ask_for_input("\033[93mDo you want to \033[92menable IPsec\033[93m? (\033[92my\033[93m/\033[91mn\033[93m)\033[0m", "y").lower()
+
+    if enable_ipsec == 'y':
+        psk = ask_for_input("\033[93mEnter the secret key for L2TP\033[0m", "secretkey")
+    else:
+        psk = None
+
+
+    with open("/etc/xl2tpd/xl2tpd.conf", "w") as f:
+        f.write(f"""
+[global]
+port = 1701
+ipsec saref = yes
+force userspace = yes
+
+[lns default]
+ip range = {ip_range_start}-{ip_range_end}
+local ip = {private_ip}
+require chap = no
+refuse pap = yes
+require authentication = no
+name = l2tpd
+ppp debug = yes
+pppoptfile = /etc/ppp/options.xl2tpd
+length bit = yes
+""")
+
+    with open("/etc/ppp/options.xl2tpd", "w") as f:
+        f.write(f"""
+ipcp-accept-local
+ipcp-accept-remote
+refuse-eap
+noccp
+noauth
+mtu {mtu}
+mru {mru}
+proxyarp
+debug
+lock
+nobsdcomp
+nodeflate
+""")
+
+
+    if enable_ipsec == 'y':
+        with open("/etc/ipsec.conf", "w") as f:
+            f.write(f"""
+config setup
+    charondebug="ike 2, knl 2, cfg 2"
+
+conn %default
+    keyexchange=ikev1
+    authby=secret
+    type=transport
+
+conn L2TP-PSK
+    auto=add
+    left={client_ip}
+    leftprotoport=17/1701
+    right={server_ip}
+    rightprotoport=17/1701
+    ike=aes256-sha1-modp1024
+    esp=aes256-sha1
+""")
+
+        with open("/etc/ipsec.secrets", "w") as f:
+            f.write(f"{client_ip} {server_ip} : PSK \"{psk}\"\n")
+
+        create_strongswan_service()
+
+        os.system("sudo systemctl stop strongswan")
+        os.system("sudo systemctl stop strongswan-starter")
+        os.system("sudo systemctl start strong-azumi1")
+
+    l2tp_bash_command = f"""#!/usr/bin/env bash
+sudo ip l2tp add tunnel tunnel_id 4 peer_tunnel_id 4 encap udp local {client_ip} remote {server_ip} udp_sport {udp} udp_dport {udp}
+sudo ip l2tp add session tunnel_id 4 session_id 4 peer_session_id 4
+sudo ip link set l2tpeth0 up
+sudo ip addr add {private_ip}/24 dev l2tpeth0
+sudo ip link set l2tpeth0 mtu {mtu_cli}
+"""
+
+    script_path = "/usr/local/bin/l2tp_client4.sh"
+    with open(script_path, "w") as f:
+        f.write(l2tp_bash_command)
+
+    os.chmod(script_path, 0o755)
+    os.system(script_path)
+    os.system(f"(crontab -l; echo '@reboot {script_path}') | crontab -")
+    os.system(f"sudo ufw allow {udp}/udp")
+    os.system("sudo ufw allow 1701/udp")
+    create_keepalive_service(private_ip)
+
+    display_checkmark("\033[92mClient setup completed! L2TP tunnel configuration has been set.\033[0m")
+    if enable_ipsec == 'y':
+        display_notification("\033[93mIPsec (PSK) configuration also enabled.\033[0m")
+
+#5
+def create_client_config5():
+    install_requirements()
+    print("\033[93m───────────────────────────────────────\033[0m")
+    display_notification("\033[93mClient [5]\033[0m")
+    print("\033[93m───────────────────────────────────────\033[0m")
+
+    client_ip = ask_for_input("\033[93mEnter \033[92mClient [5]\033[93m Public IP address\033[0m", "client public ip")
+    server_ip = ask_for_input("\033[93mEnter \033[92mServer Public IP\033[93m address\033[0m", "server public ip")
+    ip_range_start = ask_for_input("\033[93mEnter \033[92mthe starting IP\033[93m for the range\033[0m", "192.168.5.0")
+    ip_range_end = ask_for_input("\033[93mEnter \033[92mthe ending IP\033[93m for the range\033[0m", "192.168.5.10")
+    private_ip = ask_for_input("\033[93mEnter \033[92mL2TP\033[93m Private IP\033[0m", "192.168.5.2")
+    udp = ask_for_input("\033[93mEnter \033[92mUDP\033[93m Port\033[0m", "8004")
+    mtu_cli = ask_for_input("\033[93mEnter \033[92mL2TP\033[93m MTU\033[0m", "1410")
+    mtu = ask_for_input("\033[93mEnter \033[92mX2ltp\033[93m MTU value\033[0m", "1410")
+    mru = ask_for_input("\033[93mEnter \033[92mX2ltp\033[93m MRU value\033[0m", "1410")
+    enable_ipsec = ask_for_input("\033[93mDo you want to \033[92menable IPsec\033[93m? (\033[92my\033[93m/\033[91mn\033[93m)\033[0m", "y").lower()
+
+    if enable_ipsec == 'y':
+        psk = ask_for_input("\033[93mEnter the secret key for L2TP\033[0m", "secretkey")
+    else:
+        psk = None
+
+
+    with open("/etc/xl2tpd/xl2tpd.conf", "w") as f:
+        f.write(f"""
+[global]
+port = 1701
+ipsec saref = yes
+force userspace = yes
+
+[lns default]
+ip range = {ip_range_start}-{ip_range_end}
+local ip = {private_ip}
+require chap = no
+refuse pap = yes
+require authentication = no
+name = l2tpd
+ppp debug = yes
+pppoptfile = /etc/ppp/options.xl2tpd
+length bit = yes
+""")
+
+    with open("/etc/ppp/options.xl2tpd", "w") as f:
+        f.write(f"""
+ipcp-accept-local
+ipcp-accept-remote
+refuse-eap
+noccp
+noauth
+mtu {mtu}
+mru {mru}
+proxyarp
+debug
+lock
+nobsdcomp
+nodeflate
+""")
+
+
+    if enable_ipsec == 'y':
+        with open("/etc/ipsec.conf", "w") as f:
+            f.write(f"""
+config setup
+    charondebug="ike 2, knl 2, cfg 2"
+
+conn %default
+    keyexchange=ikev1
+    authby=secret
+    type=transport
+
+conn L2TP-PSK
+    auto=add
+    left={client_ip}
+    leftprotoport=17/1701
+    right={server_ip}
+    rightprotoport=17/1701
+    ike=aes256-sha1-modp1024
+    esp=aes256-sha1
+""")
+
+        with open("/etc/ipsec.secrets", "w") as f:
+            f.write(f"{client_ip} {server_ip} : PSK \"{psk}\"\n")
+
+        create_strongswan_service()
+
+        os.system("sudo systemctl stop strongswan")
+        os.system("sudo systemctl stop strongswan-starter")
+        os.system("sudo systemctl start strong-azumi1")
+
+    l2tp_bash_command = f"""#!/usr/bin/env bash
+sudo ip l2tp add tunnel tunnel_id 5 peer_tunnel_id 5 encap udp local {client_ip} remote {server_ip} udp_sport {udp} udp_dport {udp}
+sudo ip l2tp add session tunnel_id 5 session_id 5 peer_session_id 5
+sudo ip link set l2tpeth0 up
+sudo ip addr add {private_ip}/24 dev l2tpeth0
+sudo ip link set l2tpeth0 mtu {mtu_cli}
+"""
+
+    script_path = "/usr/local/bin/l2tp_client5.sh"
+    with open(script_path, "w") as f:
+        f.write(l2tp_bash_command)
+
+    os.chmod(script_path, 0o755)
+    os.system(script_path)
+    os.system(f"(crontab -l; echo '@reboot {script_path}') | crontab -")
+    os.system(f"sudo ufw allow {udp}/udp")
+    os.system("sudo ufw allow 1701/udp")
+    create_keepalive_service(private_ip)
+
+    display_checkmark("\033[92mClient setup completed! L2TP tunnel configuration has been set.\033[0m")
+    if enable_ipsec == 'y':
+        display_notification("\033[93mIPsec (PSK) configuration also enabled.\033[0m")
+
 
 #robot#
 
